@@ -1,7 +1,6 @@
 var express = require("express");
 const { getMaxListeners } = require("../app");
 const adminController=require('../controllers/admincontroller')
-const adminHelper=require('../helpers/adminHelpers')
 var router = express.Router();
 const user = require("../models/connection");
 const multer = require('../multer/multer')
@@ -43,9 +42,23 @@ router.post("/edit_product/:id",multer.editeduploads,adminController.postEditAdd
 
 router.get("/delete_product/:id",middleware.adminSession,adminController.deleteViewProduct)
 
+router.get("/coupons", middleware.adminSession, adminController.coupons);
+
+
+router.get("/add_coupons", middleware.adminSession, adminController.addCoupons);
+
+router.post("/add_coupons",middleware.adminSession,adminController.addNewCoupon);
+
+router.get("/generate_coupon",middleware.adminSession,adminController.generateCoupon);
+
+router.delete("/coupon_delete/:id",middleware.adminSession,adminController.deleteCoupon);
 
 
 router.get('/orders',middleware.adminSession,adminController.getOrders)
+
+
+
+
 
 
 

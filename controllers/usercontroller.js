@@ -158,27 +158,36 @@ module.exports = {
     })
   },
   getShop: async (req, res) => {
-    console.log(req.query.page+"_______________________________________________________");
-    let pageNum=req.query.page 
-    let currentPage=pageNum
-    let perPage=6
+    console.log(req.query.page + "_______________________________________________________");
+    let pageNum = req.query.page
+    let currentPage = pageNum
+    let perPage = 6
     console.log(req.session.user.id);
 
     count = await userhelpers.getCartItemsCount(req.session.user.id)
     viewCategory = await adminHelper.viewAddCategory()
-    documentCount=  await userhelpers.documentCount()
-    console.log(documentCount+"ppppppppppppp");
-    let pages=Math.ceil(parseInt(documentCount) /perPage)
-    console.log(pages+"!!!!!!!!!!!");
+    documentCount = await userhelpers.documentCount()
+    console.log(documentCount + "ppppppppppppp");
+    let pages = Math.ceil(parseInt(documentCount) / perPage)
+    console.log(pages + "!!!!!!!!!!!");
 
     userhelpers.shopListProduct(pageNum).then((response) => {
       console.log(response);
-      
-      res.render('user/shop', { response, userSession, count, viewCategory ,currentPage,documentCount,pages})
+
+      res.render('user/shop', { response, userSession, count, viewCategory, currentPage, documentCount, pages })
     })
 
 
   },
+  category: async(req, res) => {
+    viewCategory = await adminHelper.viewAddCategory()
+
+    userhelpers.category(req.query.cname).then((response)=>{
+      
+      res.render('user/filter-by-category',{ response, userSession,viewCategory,count})
+    })
+  },
+  
 
   getProductDetails: async (req, res) => {
     count = await userhelpers.getCartItemsCount(req.session.user.id)
@@ -239,78 +248,76 @@ module.exports = {
     })
   }
   ,
-  checkOutPage:async (req, res) => {
-    
+  checkOutPage: async (req, res) => {
+
     let users = req.session.user.id
-    
-   
-      let cartItems =  await userhelpers.viewCart(req.session.user.id)
-      console.log(cartItems);
-      let total = await userhelpers.totalCheckOutAmount(req.session.user.id)
-      userhelpers.checkOutpage(req.session.user.id).then((response)=>{
-      
-
-        res.render('user/checkout',{users,cartItems,total,response})
-  })
-
-},
-postcheckOutPage:async (req, res) => {
-
-  
- let total = await userhelpers.totalCheckOutAmount(req.session.user.id)
-let order= await userhelpers.placeOrder(req.body, total).then((response) => {
-          
-        
-         
-
-   if (req.body['payment-method'] == 'COD') {
-     res.json({ codstatus: true })
-
-   } else {
-     userhelpers.generateRazorpay(req.session.user.id, total).then((order) => {
-       console.log(order.id);
-
-       console.log(order.amount);
-       res.json(order)
-
-     })
-   }
- })
 
 
-},
-postVerifyPayment: (req, res) => {
-  console.log(req.body);
-  userhelpers.verifyPayment(req.body).then(()=>{
-    console.log(req.body);
-   
-    userhelpers.changePaymentStatus(req.session.user.id,req.body['order[receipt]']).then(()=>{
+    let cartItems = await userhelpers.viewCart(req.session.user.id)
+    console.log(cartItems);
+    let total = await userhelpers.totalCheckOutAmount(req.session.user.id)
+    userhelpers.checkOutpage(req.session.user.id).then((response) => {
 
-      res.json({status:true})
 
-    }).catch((err)=>{
- console.log(err);
- res.json({status:false ,err})
+      res.render('user/checkout', { users, cartItems, total, response, userSession })
     })
 
-  })
+  },
+  postcheckOutPage: async (req, res) => {
 
-  
-},
-getOrderPage: (req, res) => {
-  userhelpers.orderPage(req.session.user.id).then((response) => {
 
-    res.render('user/orderslist',{response,userSession})
-  })
+    let total = await userhelpers.totalCheckOutAmount(req.session.user.id)
+    let order = await userhelpers.placeOrder(req.body, total).then((response) => {
 
-},
-getCancelOrder:(req, res)=>
-  {
-    console.log('--------',req.params.orderId);
-    
-    userhelpers.cancelOrder(req.params.orderId, req.session.user.id).then((response)=>
-    {
-      console.log('++++++++',response);
+
+
+
+      if (req.body['payment-method'] == 'COD') {
+        res.json({ codstatus: true })
+
+      } else {
+        userhelpers.generateRazorpay(req.session.user.id, total).then((order) => {
+          console.log(order.id);
+
+          console.log(order.amount);
+          res.json(order)
+
+        })
+      }
+    })
+
+
+  },
+  postVerifyPayment: (req, res) => {
+    console.log(req.body);
+    userhelpers.verifyPayment(req.body).then(() => {
+      console.log(req.body);
+
+      userhelpers.changePaymentStatus(req.session.user.id, req.body['order[receipt]']).then(() => {
+
+        res.json({ status: true })
+
+      }).catch((err) => {
+        console.log(err);
+        res.json({ status: false, err })
+      })
+
+    })
+
+
+  },
+  getOrderPage: (req, res) => {
+    userhelpers.orderPage(req.session.user.id).then((response) => {
+
+      res.render('user/orderslist', { response, userSession })
+    })
+
+  },
+  getCancelOrder: (req, res) => {
+    console.log('--------', req.params.orderId);
+
+    userhelpers.cancelOrder(req.params.orderId, req.session.user.id).then((response) => {
+      console.log('++++++++', response);
       res.json(response)
     })
 
@@ -318,26 +325,51 @@ getCancelOrder:(req, res)=>
 
 
 
-getAddresspage: async (req, res) => {
-
-   
-  console.log(req.session.user.id);
+  getAddresspage: async (req, res) => {
 
 
+    console.log(req.session.user.id);
 
-  res.render('user/add-address')
 
-},
-postAddresspage:  (req, res) => {
-         
-    
-  userhelpers.postAddress(req.session.user.id,req.body).then(()=>{
 
-  
-    res.redirect('/check_out')
-  })
+    res.render('user/add-address')
 
-},
+  },
+  postAddresspage: (req, res) => {
+
+
+    userhelpers.postAddress(req.session.user.id, req.body).then(() => {
+
+
+      res.redirect('/check_out')
+    })
+
+  },
+  applyCoupon: async (req, res) => {
+    let code = req.query.code;
+    let total = await userhelpers.totalCheckOutAmount(req.session.user);
+    userhelpers.applyCoupon(code, total).then((response) => {
+      couponPrice = response.discountAmount ? response.discountAmount : 0;
+      res.json(response);
+    });
+  },
+  couponValidator: async (req, res) => {
+    let code = req.query.code;
+    userhelpers
+      .couponValidator(code, req.session.user.id)
+      .then((response) => {
+        console.log(response);
+        res.json(response);
+      });
+  },
+  couponVerify: async (req, res) => {
+    let code = req.query.code;
+    userhelpers.couponVerify(code, req.session.user.id).then((response) => {
+      console.log(response);
+
+      res.json(response);
+    });
+  },
 
 
   getLogout: (req, res) => {

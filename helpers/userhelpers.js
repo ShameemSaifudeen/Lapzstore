@@ -3,22 +3,22 @@ const bcrypt = require('bcrypt');
 const { response } = require("../app");
 const ObjectId = require('mongodb').ObjectId
 // const razorpay=req
+const Razorpay = require('razorpay');
+const razorpay = require('../thirdparty/razorpay')
 
 
-
-
-const otp = require('../thirdparty/otp')
+const otp = require('../thirdparty/otp');
+const { log } = require("console");
 
 const client = require('twilio')(otp.accountId, otp.authToken)
 
 let number
+var instance = new Razorpay({
+  key_id: razorpay.id,
+  key_secret: razorpay.secret_id
+});
+// razorpay instance
 
-//razorpay instance
-// var instance = new Razorpay({
-//   key_id: razorpay.id,
-//   key_secret: razorpay.secret_id
-
-// });
 module.exports = {
   doSignUp: (userData) => {
     let response = {};
@@ -246,6 +246,16 @@ return new Promise(async(resolve, reject) => {
 
     })
   },
+
+  category:(categoryName)=>{
+    return new Promise(async (resolve, reject) => {
+      await user.product.find({category:categoryName}).then((response)=>{
+        resolve(response)
+      })
+    })
+
+  },
+
   getCartItemsCount: (userId) => {
 
     return new Promise(async (resolve, reject) => {
@@ -511,7 +521,7 @@ return new Promise(async(resolve, reject) => {
     
       let orderdata = {
 
-           name:orderaddress.fname,
+        name:orderaddress.fname,
         paymentStatus: status,
         paymentmode:orderData['payment-method'],
         paymenmethod: orderData['payment-method'],
@@ -551,6 +561,7 @@ return new Promise(async(resolve, reject) => {
     })
   },
   generateRazorpay: (userId, total) => {
+    console.log(userId, total);
 
     return new Promise(async (resolve, reject) => {
 
@@ -559,6 +570,7 @@ return new Promise(async(resolve, reject) => {
       let order = orders[0].orders.slice().reverse()
       console.log(order);
       let orderId = order[0]._id
+      console.log(orderId+"______________________________");
       total = total * 100
       console.log(total);
       var options = {
@@ -568,13 +580,14 @@ return new Promise(async(resolve, reject) => {
       }  
       instance.orders.create(options, function (err, order) {
         if (err) {
+          console.log('_________________________');
           console.log(err);
         } else {
           // console.log('new order:',order);
 
 
           resolve(order)
-          //  console.log(order);
+           console.log(order);
         }
       })
 
@@ -602,21 +615,24 @@ return new Promise(async(resolve, reject) => {
 
   },
   changePaymentStatus: (userId, orderId) => {
+    console.log(userId);
     console.log('orderId=>', orderId);
     console.log('hi');
     return new Promise(async (resolve, reject) => {
       try {
-        let orders = await user.order.find({ userId: userId })
-
+        let orders = await user.order.find({ "userId": userId })
+console.log(orders+"+++");
         let orderIndex = orders[0].orders.findIndex(order => order._id == orderId)
         console.log(orderIndex);
+
         await user.order.updateOne(
-          {
+          { 
             'orders._id': ObjectId(orderId)
           },
           {
             $set: {
-              ['orders.' + orderIndex + '.paymentStatus']: 'PAID'
+              ['orders.' + orderIndex + '.paymentStatus']: 'PAID',
+              ['orders.' + orderIndex + '.OrderStatus']: 'success'
             }
           }
         ),
@@ -738,6 +754,130 @@ return new Promise(async(resolve, reject) => {
     })
   
   
+  },
+
+  // coupon
+
+  applyCoupon: (code, total) => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        let coupon = await user.coupon.findOne({ couponName: code });
+        if (coupon) {
+
+          //checking coupon Valid
+
+          if (new Date(coupon.expiry) - new Date() > 0) {
+            //checkingExpiry
+            if (total >= coupon.minPurchase) {
+          
+              //checking max offer value
+              let discountAmount = (total * coupon.discountPercentage) / 100;
+              if (discountAmount > coupon.maxDiscountValue) {
+            
+                discountAmount = coupon.maxDiscountValue;
+                resolve({ status: true, discountAmount: discountAmount });
+              } else {
+                resolve({ status: true, discountAmount: discountAmount });
+              }
+            } else {
+              console.log("ded1");
+              resolve({
+                status: false,
+                reason: `Minimum purchase value is ${coupon.minPurchase}`,
+              });
+            }
+          } else {
+            console.log("ded2");
+            resolve({ status: false, reason: "coupon Expired" });
+          }
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    });
+  },
+  couponVerify: (code, userId) => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        let usedCoupon = await user.user.aggregate([
+          {
+            $match: { _id: ObjectId(userId) },
+          },
+          {
+            $unwind: "$coupons",
+          },
+          {
+            $match: { _id: ObjectId(userId) },
+          },
+          {
+            $match: {
+              $and: [{ "coupons.couponName": code }, { "coupons.user": false }],
+            },
+          },
+        ]);
+        console.log(usedCoupon.length);
+        if (usedCoupon.length == 1) {
+          resolve({ status: true });
+          console.log("hii");
+        }
+        //  else {
+        //   console.log("hello");
+        //   resolve({ status: false, reason: "coupon is already Used" });
+        // }
+      } catch (err) {
+        console.log(err);
+      }
+    });
+  },
+
+  couponValidator: async (code, userId) => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        let couponExists = await user.coupon.findOne({ couponName: code });
+
+        if (couponExists) {
+          if (new Date(couponExists.expiry) - new Date() > 0) {
+            let userCouponExists = await user.user.findOne({
+              _id: userId,
+              "coupons.couponName": code,
+            });
+            if (!userCouponExists) {
+              couponObj = {
+                couponName: code,
+                user: false,
+              };
+              user.user
+                .updateOne(
+                  { _id: userId },
+                  {
+                    $push: {
+                      coupons: couponObj,
+                    },
+                  }
+                )
+                .then(() => {
+                  resolve({ status: true });
+                });
+            } else {
+              resolve({ status: false, reason: "coupon already used" });
+            }
+          } else {
+            resolve({ status: false, reason: "coupon expired" });
+          }
+        } else {
+          resolve({ status: false, reason: "coupon does'nt exist" });
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    });
+  },
+  deleteCoupon: (couponId) => {
+    return new Promise(async (resolve, reject) => {
+      await user.coupon.deleteOne({ _id: couponId }).then((response) => {
+        resolve(response);
+      });
+    });
   },
 
   // deleteCart:(prodId)=>{

@@ -20,6 +20,7 @@
     "nodemon": "^2.0.20",
     "razorpay": "^2.8.4",
     "sweetalert2": "^11.7.0",
-    "twilio": "^3.84.0"
+    "twilio": "^3.84.0",
+    "voucher-code-generator": "^1.3.0"
   }
 }

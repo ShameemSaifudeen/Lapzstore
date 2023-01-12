@@ -1,5 +1,7 @@
 const { response } = require("express");
 const user = require("../models/connection");
+const voucher_codes = require("voucher-code-generator");
+
 
 
 module.exports = {
@@ -182,6 +184,50 @@ console.log("category not exist");
            }) 
         })
     },
+    generateCoupon: () => {
+        return new Promise(async (resolve, reject) => {
+          try {
+            let couponCode = voucher_codes.generate({
+              length: 6,
+              count: 1,
+              charset: "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+              prefix: "LAPZCART-",
+            });
+            resolve({ status: true, couponCode: couponCode[0] });
+          } catch (err) {
+            console.log(err);
+          }
+        });
+      },
+      addNewCoupon: () => {
+        return new Promise((resolve, reject) => {
+          try {
+            user.coupon(data)
+              .save()
+              .then(() => {
+                resolve({ status: true });
+              });
+          } catch (error) {
+            console.log(error);
+          }
+        });
+      },
+      getCoupons: () => {
+        return new Promise((resolve, reject) => {
+          try {
+            user.coupon.find({}).then((data) => {
+              resolve(data);
+            });
+          } catch (error) {}
+        });
+      },
+      deleteCoupon: (couponId) => {
+        return new Promise(async (resolve, reject) => {
+          await user.coupon.deleteOne({ _id: couponId }).then((response) => {
+            resolve(response);
+          });
+        });
+      },
 
 
 

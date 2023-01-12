@@ -74,18 +74,20 @@
                                     <div class="total-amount">
                                         <div class="left">
                                             <div class="coupon">
-                                                <form action="/cartItems"  target="_blank">
+                                                <form action="" >
                                                     <div class="form-row row justify-content-center">
                                                         <div class="form-group col-lg-9">
-                                                            <input class="font-medium" name="Coupon" placeholder="Enter Your Coupon">
+                                                            <input id="code" class="font-medium" name="Coupon" placeholder="Enter Your Coupon">
                                                         </div>
                                                         <div class="form-group col-lg-3">
 
 
-<button class="btn  btn-sm"><i class="fi-rs-label mr-10"></i>Apply</button>
+                              
+                              <button class="btn  btn-sm" type="button" onclick="couponValidator(this,'<%=total%>')"><i class="fi-rs-label mr-10"></i>Apply</button>
                                                         </div>
                                                     </div>
                                                 </form>
+                                                <span class="couponErr"></span>
                                             </div>
                                         </div>
                                     </div>
@@ -209,5 +211,73 @@ function removeItem(cartId, prodId) {
 })
    
 }
+function couponValidator(elem, total) {
+    code = document.getElementById("code").value.trim();
+    console.log(code);
+    // couponTotal = document.getElementById("total").value;
+    $.ajax({
+      url: "/coupon_validator?code=" + code,
+      method: "get",
+      success: (response) => {
+        console.log(response + "coupon validated");
+
+        console.log(response);
+        if (response.status == true) {
+          $.ajax({
+            url: "/coupon_verify?code=" + code,
+            method: "get",
+            success: (response) => {
+              console.log(response + "coupon verified");
+              if (response.status == true) {
+                $.ajax({
+                  url: "/apply_coupon?code=" + code,
+                  method: "get",
+                  success: (response) => {
+                    console.log(response.discountAmount + "i am discount");
+                    console.log(response.status + "i am status");
+
+                    if (response.status == true) {
+                      console.log("success3", response);
+                      document.querySelector(".couponErr").style.color =
+                        "#19ff11";
+                      document.querySelector(".couponErr").innerHTML =
+                        "Coupon Applied Succesfully";
+                      document.getElementById("total").innerHTML =
+                        total - response.discountAmount;
+                      // couponTotal.innerHTML = `₹ ${
+                      //   total - response.discountAmount
+                    } else {
+                      console.log("failed", response);
+                      document.querySelector(".couponErr").style.color =
+                        "#ff0707";
+                      document.querySelector(".couponErr").innerHTML =
+                        response.reason;
+                    }
+                  },
+                });
+              } else {
+                document.querySelector(".couponErr").style.color = "#ff0707";
+                console.log("failed", response.reason);
+                document.querySelector(".couponErr").innerHTML =
+                  response.reason;
+
+                setTimeout(function () {
+                  document.querySelector(".couponErr").style.display = "none";
+                }, 3000);
+              }
+            },
+          });
+        } else {
+          document.querySelector(".couponErr").style.color = "#ff0707";
+          document.querySelector(".couponErr").innerHTML = response.reason;
+          console.log("failed", response.reason);
+
+          setTimeout(function () {
+            document.querySelector(".couponErr").style.display = "none";
+          }, 3000);
+        }
+      },
+    });
+  }
 
 </script>

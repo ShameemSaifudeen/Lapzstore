@@ -10,15 +10,15 @@ const adminCredential = {
 let adminStatus
 let viewCategory
 module.exports = {
-  
+
 
 
   getAdminLogin: (req, res) => {
-   
-      console.log(adminloginErr);
-      // res.render("admin/admin-dashboard", { layout: "adminLayout", adminStatus,adminloginErr})
+
+    console.log(adminloginErr);
+    // res.render("admin/admin-dashboard", { layout: "adminLayout", adminStatus,adminloginErr})
     res.redirect('/admin')
-   
+
   },
 
 
@@ -31,7 +31,7 @@ module.exports = {
       console.log("passwordcorrect");
       req.session.admin = adminCredential,
         req.session.adminloggedIn = true
-        adminloginErr = false
+      adminloginErr = false
       adminStatus = req.session.adminloggedIn
 
       res.redirect('/admin')
@@ -40,7 +40,7 @@ module.exports = {
     else {
       adminloginErr = true
 
-      res.render('admin/login',{ layout: "adminLayout",adminloginErr,adminStatus})
+      res.render('admin/login', { layout: "adminLayout", adminloginErr, adminStatus })
     }
   },
 
@@ -48,8 +48,8 @@ module.exports = {
   getDashboard: (req, res) => {
     let variable = req.session.admin
 
-      res.render("admin/admin-dashboard", { layout: "adminLayout", variable, adminStatus });
-  
+    res.render("admin/admin-dashboard", { layout: "adminLayout", variable, adminStatus });
+
 
 
   },
@@ -75,10 +75,10 @@ module.exports = {
   },
   getAdminLogOut: (req, res) => {
     req.session.admin = null
-    req.session.adminloggedIn=false
-    adminStatus=false
-    
-    res.render("admin/login", { layout: "adminLayout", adminStatus})
+    req.session.adminloggedIn = false
+    adminStatus = false
+
+    res.render("admin/login", { layout: "adminLayout", adminStatus })
   },
   getCategory: (req, res) => {
     adminHelper.viewAddCategory().then((response) => {
@@ -90,18 +90,18 @@ module.exports = {
   postCategory: (req, res) => {
     console.log(req.body.categoryname);
     adminHelper.addCategory(req.body).then((data) => {
-      
+
       var categoryStatus = data.categoryStatus
       if (categoryStatus == false) {
 
-      res.redirect('/admin/add_category');
-        
+        res.redirect('/admin/add_category');
+
       } else {
-        
+
 
         adminHelper.viewAddCategory().then((response) => {
           viewCategory = response
-          res.render("admin/add-category", { layout: "adminLayout", adminStatus, viewCategory, categoryStatus});
+          res.render("admin/add-category", { layout: "adminLayout", adminStatus, viewCategory, categoryStatus });
         })
       }
 
@@ -141,7 +141,7 @@ module.exports = {
     })
   },
   postAddProduct: (req, res) => {
-    let  image= req.files.map(files =>(files.filename))
+    let image = req.files.map(files => (files.filename))
     console.log(image);
     adminHelper.AddProduct(req.body, image).then((response) => {
       res.redirect('/admin/view_product')
@@ -178,7 +178,7 @@ module.exports = {
   postEditAddProduct: (req, res) => {
 
     adminHelper.postEditProduct(req.params.id, req.body, req?.file?.filename).then((response) => {
-      
+
       res.redirect('/admin/view_product')
     })
 
@@ -199,11 +199,58 @@ module.exports = {
 
 
   },
-
-  getOrders:(req,res)=>{
-    res.render('admin/orders', { layout: "adminLayout", adminStatus})
+  coupons: async (req, res) => {
+    let coupon = await adminHelper.getCoupons();
+    const getDate = (date) => {
+      let orderDate = new Date(date);
+      let day = orderDate.getDate();
+      let month = orderDate.getMonth() + 1;
+      let year = orderDate.getFullYear();
+      return `${isNaN(day) ? "00" : day}-${isNaN(month) ? "00" : month}-${isNaN(year) ? "0000" : year
+        }`;
+    };
+    console.log(coupon);
+    res.render("admin/coupon", {
+      layout: "adminLayout",
+      coupon,
+      adminStatus,
+      getDate,
+    });
+  
+  },
+  addCoupons: (req, res) => {
+    res.render("admin/add-coupon", { layout: "adminLayout", adminStatus });
+  },
+  addNewCoupon: (req, res) => {
+    data = {
+      couponName: req.body.couponName,
+      expiry: req.body.expiry,
+      minPurchase: req.body.minPurchase,
+      description: req.body.description,
+      discountPercentage: req.body.discountPercentage,
+      maxDiscountValue: req.body.maxDiscountValue,
+    };
+    console.log(data);
+    adminHelper.addNewCoupon(data).then((response) => {
+      res.json(response);
+    });
+  },
+  generateCoupon: (req, res) => {
+    console.log(req);
+    adminHelper.generateCoupon().then((response) => {
+      res.json(response);
+    });
+  },
+  deleteCoupon: (req, res) => {
+    console.log(req.params.id);
+    adminHelper.deleteCoupon(req.params.id).then((response) => {
+      res.json(response);
+    });
   },
 
+    getOrders: (req, res) => {
+      res.render('admin/orders', { layout: "adminLayout", adminStatus })
+    },
 
 
 
@@ -222,12 +269,13 @@ module.exports = {
 
 
 
-  banner: (req, res) => {
-    res.render('admin/banner-management-home', { layout: "adminLayout",adminStatus })
-},
-addBanner: (req, res) => {
-  res.render('admin/addBanner', { layout: "adminLayout",adminStatus })
-},
+
+      banner: (req, res) => {
+        res.render('admin/banner-management-home', { layout: "adminLayout", adminStatus })
+      },
+        addBanner: (req, res) => {
+          res.render('admin/addBanner', { layout: "adminLayout", adminStatus })
+        },
 
 }
 

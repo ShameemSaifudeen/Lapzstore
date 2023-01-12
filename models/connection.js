@@ -36,6 +36,7 @@ const userschema= new mongoose.Schema({
       blocked:{
         type:Boolean,default:false
     },
+    coupons:{type:Array},
    CreatedAt:{
      type:Date,
      deafault:Date.now,
@@ -140,11 +141,28 @@ const orderSchema = new mongoose.Schema({
           createdAt: {
               type: Date,
               default: new Date()
-          }
+          }, 
+          orderStatus:{
+            type:String,default:"Ordered"
+        },
       }
   ]
 })
-
+const couponSchema = new mongoose.Schema({
+  couponName: String,
+  expiry: {
+    type: Date,
+    default: new Date(),
+  },
+  minPurchase: Number,
+  discountPercentage: Number,
+  maxDiscountValue: Number,
+  description: String,
+  createdAt: {
+    type: Date,
+    default: new Date(),
+  },
+});
 
 //  module.exports=db
  
@@ -156,7 +174,9 @@ const orderSchema = new mongoose.Schema({
   product:mongoose.model('product',productSchema),
   cart:mongoose.model('cart',cartSchema),
   order:mongoose.model('order',orderSchema),
-  address:mongoose.model('address',addressSchema)
+  address:mongoose.model('address',addressSchema),
+  coupon: mongoose.model("coupon", couponSchema),
+
   
  }
 

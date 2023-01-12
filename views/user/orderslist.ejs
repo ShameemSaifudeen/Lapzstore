@@ -1,0 +1,94 @@
+<div class="card-body">
+  <div class="table-responsive">
+    <div class="table-responsive">
+      <table class="table align-middle table-nowrap mb-0">
+        <thead class="table-light">
+          <tr>
+             
+            <th class="align-middle" scope="col">Order ID</th>
+            <th class="align-middle" scope="col">Billing Name</th>
+            <th class="align-middle" scope="col">Date</th>
+            <th class="align-middle" scope="col">Total</th>
+            <th class="align-middle" scope="col">Payment Status</th>
+            <th class="align-middle" scope="col">Payment Method</th>
+            <th class="align-middle" scope="col">Order Status</th>
+
+            <th class="align-middle" scope="col">Option</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% response?.forEach(function(response) { %>
+          <tr>
+            
+            <td><a href="#" class="fw-bold"> <%=response.orders._id%></a></td>
+            <td><%=response.orders.name%></td>
+            <td><%=response.orders.createdAt%></td>
+            <td><%=response.orders.totalPrice%></td>
+            <td>
+              <%=response.orders.paymentStatus%>
+            </td>
+            <td>
+              <i
+                class="material-icons md-payment font-xxl text-muted mr-5"
+              ></i>
+              <%=response.orders.paymentmode%>
+            </td>
+            <td>
+             
+              
+<%if(response.orders.orderStatus == 'Ordered'){%>
+  
+  <p style="color: green;">ordered</p>
+  <%}else {%>
+    <p style="color: red;">cancelled</p>
+                  <%}%>
+            </td>
+            <td>
+              <%if(response.orders.orderStatus == 'Ordered'){%>
+                 
+             
+                <button class="btn" onclick="cancelOrder('<%=response.orders._id%>')" >Cancel</button>
+                 <%}%>
+            </td>
+           
+          </tr>
+          <% }) %> 
+         
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+
+<script>
+
+  
+function cancelOrder(orderid) 
+    {
+      console.log(orderid);
+      $.ajax({
+        url: '/cancel_order/'+orderid,
+        
+        method:'GET',
+        
+        success:(response)=>
+        {
+
+          if(response)
+          {
+            location.reload()
+          }
+
+        }
+        
+      })
+
+    }
+
+
+
+
+
+</script>

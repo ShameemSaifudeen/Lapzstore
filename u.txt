@@ -1,0 +1,84 @@
+getOtp: (req, res) => {
+
+    res.render('user/otp')
+  },
+
+  //post otp
+
+  postOtp: async(req, res) => {
+    console.log(req.body.phonenumber);
+    number = req.body.phonenumber;
+    let users =  await user.user.find({ phonenumber: number }).exec()
+    console.log(users);
+    if (users == false) {
+       res.redirect('/login')
+    } else {
+      client.verify.v2
+        .services(otp.servieceId)
+        .verifications.create({ to: +91 ${number}, channel: "sms" })
+        .then((verification) =>
+          console.log(verification.status))
+        .then(() => {
+          const readline = require("readline").createInterface({
+            input: process.stdin,
+            output: process.stdout,
+          })
+
+        })
+
+    }
+     res.render('user/otpverify')
+  },
+
+
+  getVerify: (req, res) => {
+    res.render('user/otpPage')
+  },
+
+  postVerify: (req, res) => {
+    console.log(req.body);
+    OtpNumber=req.body.number
+    console.log(Number + '  Phone number');
+    console.log(Number + '  otp');
+    client.verify.v2
+      .services(otpLogin.servieceId)
+      .verificationChecks.create({ to: +91 ${Number}, code:OtpNumber})
+      .then((verification_check) => { console.log(verification_check.status);
+        console.log(verification_check);
+      if(verification_check.valid){
+           res.redirect('/')
+       }else{
+        res.render('user/otpverify',{status:false})
+       }
+      
+      }
+      )
+        
+  },
+
+   number = userNumber
+    console.log(number);
+    let users = await user.user.find({ phonenumber: number }).exec()
+
+      console.log(users);
+      if (users==false) {
+    console.log("no user");
+  
+    
+      } else {
+        console.log('No user');
+        client.verify.v2
+        .services(otp.serviceId)
+        .verifications.create({ to:`+91${number}`, channel:"sms" })
+  .then((verification) =>
+          console.log(verification.status))
+    .then(() => {
+      const readline = require("readline").createInterface({
+        input: process.stdin,
+        output: process.stdout,
+      })
+
+    })
+        
+  }
+    

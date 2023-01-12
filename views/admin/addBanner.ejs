@@ -1,0 +1,46 @@
+<div class="col-12 grid-margin stretch-card">
+    <div class="card">
+      <div class="card-body">
+        <h3 class="card-title">Banner Management</h3>
+        <p></p>
+  
+        <br>
+  
+        <form class="forms-sample" method="post" action="/admin/add-banner" enctype="multipart/form-data">
+  
+          <div class="row">
+            <div class="col-12">
+              <div class="form-group col-md-5">
+                <div class="d-flex">
+                  <label class="w-25">Title</label>
+                  <p id="err" class="text-danger d-flex justify-content-end w-75"></p>
+                </div>
+                <input type="text" class="form-control" id="name" placeholder="Title" name="title" required>
+              </div>
+  
+              <div class="form-group col-md-5">
+                <div class="d-flex">
+                  <label class="w-25">Description</label>
+                  <p id="err" class="text-danger d-flex justify-content-end w-75"></p>
+                </div>
+                <input type="text" class="form-control" id="name" placeholder="Description" name="description" required>
+              </div>
+  
+              <div class="form-group col-md-10">
+                <img src="" alt="" class="img-fluid w-25 h-25" id="imgView">
+              </div>
+  
+              <div class="form-group col-md-5">
+                <label for="">Image</label>
+                <input type="file" name="image" id="image" class="form-control" onchange="viewImage(event)">
+              </div>
+            </div>
+            <div class="col-6">
+              <button type="submit" class="btn btn-primary ml-3 mr-2 col-md-2">Submit</button>
+              <button class="btn btn-light" onclick="history.back()">Cancel</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>

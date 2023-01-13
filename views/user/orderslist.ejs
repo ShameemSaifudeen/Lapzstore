@@ -6,13 +6,8 @@
           <tr>
              
             <th class="align-middle" scope="col">Order ID</th>
-            <th class="align-middle" scope="col">Billing Name</th>
             <th class="align-middle" scope="col">Date</th>
-            <th class="align-middle" scope="col">Total</th>
-            <th class="align-middle" scope="col">Payment Status</th>
-            <th class="align-middle" scope="col">Payment Method</th>
-            <th class="align-middle" scope="col">Order Status</th>
-
+            <th class="align-middle" scope="col">OrderStatus</th>
             <th class="align-middle" scope="col">Option</th>
           </tr>
         </thead>
@@ -21,34 +16,16 @@
           <tr>
             
             <td><a href="#" class="fw-bold"> <%=response.orders._id%></a></td>
-            <td><%=response.orders.name%></td>
+      
             <td><%=response.orders.createdAt%></td>
-            <td><%=response.orders.totalPrice%></td>
             <td>
-              <%=response.orders.paymentStatus%>
-            </td>
-            <td>
-              <i
-                class="material-icons md-payment font-xxl text-muted mr-5"
-              ></i>
-              <%=response.orders.paymentmode%>
+              <%=response.orders.OrderStatus%>
             </td>
             <td>
              
-              
-<%if(response.orders.orderStatus == 'Ordered'){%>
-  
-  <p style="color: green;">ordered</p>
-  <%}else {%>
-    <p style="color: red;">cancelled</p>
-                  <%}%>
-            </td>
-            <td>
-              <%if(response.orders.orderStatus == 'Ordered'){%>
-                 
-             
-                <button class="btn" onclick="cancelOrder('<%=response.orders._id%>')" >Cancel</button>
-                 <%}%>
+                <!-- <button onclick="cancelorder('<%=response.orders._id%>')" class="btn btn-xs">Cancel</button> -->
+                <a href="/order_details?order=<%=response.orders._id%>" class="btn btn-primary"> Order Details  </a>
+            
             </td>
            
           </tr>
@@ -61,31 +38,24 @@
 
 </div>
 
-
 <script>
 
-  
-function cancelOrder(orderid) 
-    {
-      console.log(orderid);
-      $.ajax({
-        url: '/cancel_order/'+orderid,
-        
-        method:'GET',
-        
-        success:(response)=>
-        {
+  function cancelorder(orderid){
+    console.log(orderid);
 
-          if(response)
-          {
-            location.reload()
-          }
+ $.ajax({  
 
-        }
-        
-      })
-
+   url:'/cancel_order?orderid='+orderid,
+   method:'put',
+   success:(response)=>{
+    if(response.status){
+      location.reload()
     }
+
+   }
+ })
+
+  }
 
 
 

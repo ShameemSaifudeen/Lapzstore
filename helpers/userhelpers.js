@@ -69,7 +69,7 @@ module.exports = {
             await bcrypt.compare(userData.password, users.Password).then((status) => {
               if (status) {
                 id = users._id
-                console.log(id+"hhhhh");
+                console.log(id + "hhhhh");
                 userName = users.username
 
                 resolve({ id, response, loggedInStatus: true })
@@ -93,31 +93,32 @@ module.exports = {
 
 
   },
-documentCount:()=>{
-return new Promise(async(resolve, reject) => {
-  await user.product.find().countDocuments().then((documents) => {
-    
-    resolve(documents);
-})
-})},
+  documentCount: () => {
+    return new Promise(async (resolve, reject) => {
+      await user.product.find().countDocuments().then((documents) => {
+
+        resolve(documents);
+      })
+    })
+  },
 
 
   shopListProduct: (pageNum) => {
-   console.log("hi");
-    
-    let perPage=6
+    console.log("hi");
+
+    let perPage = 6
     return new Promise(async (resolve, reject) => {
-     
-      
-        
-       await user.product.find().skip((pageNum-1)*perPage).limit(perPage).then((response)=>{
+
+
+
+      await user.product.find().skip((pageNum - 1) * perPage).limit(perPage).then((response) => {
         console.log(response);
-        
-          resolve(response)
-        })
-        // console.log(response)
-        
-      
+
+        resolve(response)
+      })
+      // console.log(response)
+
+
     })
   },
   productDetails: (proId) => {
@@ -195,7 +196,7 @@ return new Promise(async(resolve, reject) => {
   },
   viewCart: (userId) => {
 
-    console.log(userId+"view");
+    console.log(userId + "view");
     return new Promise(async (resolve, reject) => {
 
 
@@ -206,13 +207,13 @@ return new Promise(async(resolve, reject) => {
           }
         },
         {
-          $unwind: '$cartItems' 
+          $unwind: '$cartItems'
         },
 
 
         {
           $project: {
-    
+
             item: '$cartItems.productId',
             quantity: '$cartItems.Quantity'
           }
@@ -247,9 +248,9 @@ return new Promise(async(resolve, reject) => {
     })
   },
 
-  category:(categoryName)=>{
+  category: (categoryName) => {
     return new Promise(async (resolve, reject) => {
-      await user.product.find({category:categoryName}).then((response)=>{
+      await user.product.find({ category: categoryName }).then((response) => {
         resolve(response)
       })
     })
@@ -275,33 +276,33 @@ return new Promise(async(resolve, reject) => {
   changeProductQuantity: (data) => {
     console.log(data);
     count = parseInt(data.count)
-    quantity=parseInt(data.quantity)
+    quantity = parseInt(data.quantity)
     return new Promise((resolve, reject) => {
-    if(count==-1 && quantity==1){
-      console.log("ifhi");
-      user.cart.updateOne({ '_id':data.cart  }, {
-        $pull:{cartItems:{productId:data.product}}
-      }).then(()=>{
-        resolve({removeProduct:true})
+      if (count == -1 && quantity == 1) {
+        console.log("ifhi");
+        user.cart.updateOne({ '_id': data.cart }, {
+          $pull: { cartItems: { productId: data.product } }
+        }).then(() => {
+          resolve({ removeProduct: true })
 
-      })
+        })
 
-    }
-    else{
-      console.log("else hi");
-      user.cart.updateOne({ '_id':data.cart , 'cartItems.productId': data.product }, {
-        $inc: { 'cartItems.$.Quantity': count }
-      }).then(() => {
-        resolve({status:true})
-      })
-    }
-
-
+      }
+      else {
+        console.log("else hi");
+        user.cart.updateOne({ '_id': data.cart, 'cartItems.productId': data.product }, {
+          $inc: { 'cartItems.$.Quantity': count }
+        }).then(() => {
+          resolve({ status: true })
+        })
+      }
 
 
-    
 
-      
+
+
+
+
     })
 
 
@@ -339,20 +340,20 @@ return new Promise(async(resolve, reject) => {
           }
         },
         {
-          $project:{
-           item:1,quantity:1,product:{$arrayElemAt:['$carted',0]}
+          $project: {
+            item: 1, quantity: 1, product: { $arrayElemAt: ['$carted', 0] }
           }
-        
+
         },
         {
           $group: {
-              _id: null,
+            _id: null,
             total: { $sum: { $multiply: ["$quantity", "$product.Price"] } }
           }
-      }
+        }
       ]).then((total) => {
-        
- 
+
+
 
         resolve(total[0]?.total)
 
@@ -364,49 +365,48 @@ return new Promise(async(resolve, reject) => {
   },
   deleteCart: (data) => {
     return new Promise((resolve, reject) => {
-        
-            user.cart.updateOne({ '_id': data.cartId },
-                {
-                    "$pull":{cartItems:{productId:data.product}}
-                }
-            ).then(() => {
-                resolve({ removeProduct: true })
-            })
-       
+
+      user.cart.updateOne({ '_id': data.cartId },
+        {
+          "$pull": { cartItems: { productId: data.product } }
+        }
+      ).then(() => {
+        resolve({ removeProduct: true })
+      })
+
     })
   },
-  getCardProdctList:(userId)=>{
-    return new Promise(async(resolve, reject) => {
-     
-      
-          let id = user.cart.aggregate([
-      
-            {
-              $match: {
-                user:ObjectId(userId)
-              }
-            },
-            {
-             $unwind: '$cartItems'
-            },
-                
-          {
-              $project: {
-                  item: '$cartItems.productId',
-                _id:0
-              }
-          },
-      
-          ]).then((result)=>
-          {
-            console.log(result);
-            resolve(result)
-          })
-         
-        })
-      
-    
-  
+  getCardProdctList: (userId) => {
+    return new Promise(async (resolve, reject) => {
+
+
+      let id = user.cart.aggregate([
+
+        {
+          $match: {
+            user: ObjectId(userId)
+          }
+        },
+        {
+          $unwind: '$cartItems'
+        },
+
+        {
+          $project: {
+            item: '$cartItems.productId',
+            _id: 0
+          }
+        },
+
+      ]).then((result) => {
+        console.log(result);
+        resolve(result)
+      })
+
+    })
+
+
+
 
   },
   checkOutpage: (userId) => {
@@ -446,6 +446,7 @@ return new Promise(async(resolve, reject) => {
     })
   },
   placeOrder: (orderData, total) => {
+    console.log(orderData.address);
     return new Promise(async (resolve, reject) => {
 
       let productdetails = await user.cart.aggregate([
@@ -467,6 +468,7 @@ return new Promise(async(resolve, reject) => {
           }
         },
 
+
         {
           $lookup: {
             from: 'products',
@@ -478,8 +480,11 @@ return new Promise(async(resolve, reject) => {
         {
           $unwind: '$productdetails'
         },
+
         {
           $project: {
+            image: '$productdetails.Image',
+            category: '$productdetails.category',
             _id: "$productdetails._id",
             quantity: 1,
             productsName: "$productdetails.Productname",
@@ -488,46 +493,37 @@ return new Promise(async(resolve, reject) => {
           }
         }
       ])
-   
-   let address= await user.address.aggregate([
-        {
-          $match: {
-            userid: ObjectId(orderData.user)
-          }
-        },
-        {
-          $unwind: '$Address'
-        },
 
+      console.log(productdetails + "product")
+
+      let Address = await user.address.aggregate([
+        { $match: { userid: ObjectId(orderData.user) } },
+        { $unwind: "$Address" },
+        { $match: { 'Address._id': ObjectId(orderData.address) } },
+        { $unwind: "$Address" },
         {
           $project: {
-            item: '$Address'
-
+            item: "$Address"
           }
         },
-
-        {
-          $project: {
-            item: 1,
-            }
-          },
-         
-
       ])
-      
-      orderaddress=address[0].item;
-    
-      let status = orderData['payment-method'] === 'COD' ? 'paid' : 'pending'
-    
+      console.log(Address);
+      const items = Address.map(obj => obj.item);
+      console.log(items[0]);
+      let orderaddress = items[0]
+      let status = orderData['payment-method'] === 'COD' ? 'placed' : 'pending'
+      let orderstatus = orderData['payment-method'] === 'COD' ? 'success' : 'pending'
       let orderdata = {
 
-        name:orderaddress.fname,
+        name: orderaddress.fname,
         paymentStatus: status,
-        paymentmode:orderData['payment-method'],
+        paymentmode: orderData['payment-method'],
         paymenmethod: orderData['payment-method'],
         productDetails: productdetails,
         shippingAddress: orderaddress,
+        OrderStatus: orderstatus,
         totalPrice: total
+
       }
 
 
@@ -554,10 +550,10 @@ return new Promise(async(resolve, reject) => {
           resolve(orders)
         })
       }
-         await  user.cart.deleteMany({ user: orderData.user }).then(()=>{
-          resolve()
-         })
-    
+      await user.cart.deleteMany({ user: orderData.user }).then(() => {
+        resolve()
+      })
+
     })
   },
   generateRazorpay: (userId, total) => {
@@ -570,14 +566,14 @@ return new Promise(async(resolve, reject) => {
       let order = orders[0].orders.slice().reverse()
       console.log(order);
       let orderId = order[0]._id
-      console.log(orderId+"______________________________");
+      console.log(orderId + "______________________________");
       total = total * 100
       console.log(total);
       var options = {
         amount: parseInt(total),
         currency: "INR",
         receipt: "" + orderId,
-      }  
+      }
       instance.orders.create(options, function (err, order) {
         if (err) {
           console.log('_________________________');
@@ -587,7 +583,7 @@ return new Promise(async(resolve, reject) => {
 
 
           resolve(order)
-           console.log(order);
+          console.log(order);
         }
       })
 
@@ -602,6 +598,7 @@ return new Promise(async(resolve, reject) => {
         hmac.update(details['payment[razorpay_order_id]'] + "|" + details['payment[razorpay_payment_id]'])
         hmac = hmac.digest('hex')
         if (hmac == details['payment[razorpay_signature]']) {
+
           resolve()
         } else {
           reject("not match")
@@ -615,42 +612,34 @@ return new Promise(async(resolve, reject) => {
 
   },
   changePaymentStatus: (userId, orderId) => {
-    console.log(userId);
-    console.log('orderId=>', orderId);
-    console.log('hi');
+
+    console.log(orderId);
     return new Promise(async (resolve, reject) => {
       try {
-        let orders = await user.order.find({ "userId": userId })
-console.log(orders+"+++");
-        let orderIndex = orders[0].orders.findIndex(order => order._id == orderId)
-        console.log(orderIndex);
+        //  await user.order.findOne({'orders._id':orderId},{'orders.$':1})
 
-        await user.order.updateOne(
-          { 
-            'orders._id': ObjectId(orderId)
-          },
+
+        let users = await user.order.updateOne(
+          { 'orders._id': orderId },
           {
             $set: {
-              ['orders.' + orderIndex + '.paymentStatus']: 'PAID',
-              ['orders.' + orderIndex + '.OrderStatus']: 'success'
+              'orders.$.OrderStatus': 'success',
+              'orders.$.paymentStatus': 'paid'
             }
           }
-        ),
-          await user.cart.deleteMany({ userid: orderId })
-            .then(() => {
+        )
+        await user.cart.deleteMany({ user: userId });
+        resolve();
 
-              resolve()
-
-            })
       } catch (err) {
         console.log(err)
-      }
 
-    })
+      }
+    });
   },
   postAddress: (userId, data) => {
     console.log('hlo');
-    return new Promise(async(resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
 
       let addressInfo = {
         fname: data.fname,
@@ -664,44 +653,44 @@ console.log(orders+"+++");
         email: data.email,
 
       }
-   
 
 
-        let AddressInfo = await user.address.findOne({ userid: userId })
-        if (AddressInfo) {
+
+      let AddressInfo = await user.address.findOne({ userid: userId })
+      if (AddressInfo) {
 
 
-          await user.address.updateOne({ userid: userId },
+        await user.address.updateOne({ userid: userId },
+          {
+            "$push":
             {
-              "$push":
-              {
-                "Address": addressInfo
+              "Address": addressInfo
 
-              }
-            }).then((response) => {
-              console.log(response);
-              resolve(response)
-            })
-
-
-
-        } else {
-
-
-          let addressData = new user.address({
-            userid: userId,
-
-            Address: addressInfo
-
-          })
-
-          await addressData.save().then((response) => {
+            }
+          }).then((response) => {
             console.log(response);
             resolve(response)
-          });
-        }
-      })
-   
+          })
+
+
+
+      } else {
+
+
+        let addressData = new user.address({
+          userid: userId,
+
+          Address: addressInfo
+
+        })
+
+        await addressData.save().then((response) => {
+          console.log(response);
+          resolve(response)
+        });
+      }
+    })
+
   },
   orderPage: (userId) => {
     return new Promise(async (resolve, reject) => {
@@ -723,37 +712,58 @@ console.log(orders+"+++");
     })
 
   },
-  cancelOrder:(orderId,userId)=>{
+  viewOrderDetails: (orderId) => {
+    return new Promise(async (resolve, reject) => {
 
-    console.log('orderId',orderId);
-    console.log(userId);
-    return new Promise(async(resolve, reject) => {
+  let productid = await user.order.findOne({ "orders._id": orderId },{'orders.$':1})
+   
+   let details=productid.orders[0]
+   let order=productid.orders[0].productDetails
+ 
+   const productDetails = productid.orders.map(object => object.productDetails);
+   const address= productid.orders.map(object => object.shippingAddress);
+   const products = productDetails.map(object => object[0])
      
-    let orders= await user.order.find({'orders._id':orderId})
-    console.log('match---',orders);
-    
-    console.log(orders[0].orders[0]._id);
-  
-    let orderIndex = orders[0].orders.findIndex(orders => orders._id == orderId)
-    console.log(orderIndex);
-  
-      await user.order.updateOne({ 'orders._id': orderId }  ,
-       {
-        $set:
-        {
-          ['orders.'+orderIndex+'.orderStatus']:'cancelled'
-  
-        }
+        resolve({products,address, details,})
       
-       
-       }).then((orders)=>{
-        console.log(orders);
-           resolve(orders)
-    })
     
+           
     })
-  
-  
+
+
+
+  },
+  cancelOrder: (orderId, userId) => {
+
+    console.log('orderId', orderId);
+    console.log(userId);
+    return new Promise(async (resolve, reject) => {
+
+      let orders = await user.order.find({ 'orders._id': orderId })
+      console.log('match---', orders);
+
+      console.log(orders[0].orders[0]._id);
+
+      let orderIndex = orders[0].orders.findIndex(orders => orders._id == orderId)
+      console.log(orderIndex);
+
+      await user.order.updateOne({ 'orders._id': orderId },
+        {
+          $set:
+          {
+            ['orders.' + orderIndex + '.orderStatus']: 'cancelled'
+
+          }
+
+
+        }).then((orders) => {
+          console.log(orders);
+          resolve(orders)
+        })
+
+    })
+
+
   },
 
   // coupon
@@ -769,11 +779,11 @@ console.log(orders+"+++");
           if (new Date(coupon.expiry) - new Date() > 0) {
             //checkingExpiry
             if (total >= coupon.minPurchase) {
-          
+
               //checking max offer value
               let discountAmount = (total * coupon.discountPercentage) / 100;
               if (discountAmount > coupon.maxDiscountValue) {
-            
+
                 discountAmount = coupon.maxDiscountValue;
                 resolve({ status: true, discountAmount: discountAmount });
               } else {

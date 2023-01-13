@@ -71,8 +71,16 @@ const productSchema=new mongoose.Schema({
   Price:{
 type:Number
   },
+  productActive: {
+    type: Boolean,
+    default: true,
+  },
   category:{
     type:String
+  },
+  productActive: {
+    type: Boolean,
+    default: true,
   }
   
 

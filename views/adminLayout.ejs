@@ -33,10 +33,14 @@
 
   </head>
   <body>
-    <%-include('partials/admin-sidebar')%>
+    <% if (adminStatus==true) { %>
+    
+      <%-include('partials/admin-sidebar')%>
+      <main class="main-wrap">
+      
+      <%}%>
 
 
-<main class="main-wrap">
 
     <%- include('partials/admin-header') %>
     

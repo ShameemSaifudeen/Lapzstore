@@ -24,13 +24,13 @@
               <thead class="table-light">
                 <tr>
                   <th class="align-middle" scope="col">No:</th>
-                  <th class="align-middle" scope="col">product Name</th>
+                  <th class="align-middle" scope="col">Product Name</th>
                   <th class="align-middle" scope="col">Discription</th>
-                  <th class="align-middle" scope="col">price</th>
+                  <th class="align-middle" scope="col">Price</th>
                   <th class="align-middle" scope="col">Category</th>
                   <th class="align-middle" scope="col">Quantity</th>
                   <th class="align-middle" scope="col">Image</th>
-                  <th class="align-middle" scope="col">option</th>
+                  <th class="align-middle" scope="col">Option</th>
                 </tr>
               </thead>
               <tbody>
@@ -46,8 +46,24 @@
                   <td><img src='/uploads/<%= response.Image[0] %>' alt="" style="width:50px;height:50px";></td>
                   <td>
                         <a href ="/admin/edit_product/<%=response._id %>"  class="btn btn-success">Edit</a>
+
+                        <a href ="/admin/delete_product/<%=response._id %>"  class="btn btn-success">Delete</a>
+
                  
-                        <a href ="/admin/delete_product/<%=response._id %>" class="btn btn-danger">Delete</a>
+                        <%if(response.productActive){%>
+                          <button
+                            class="btn btn-warning "
+                            onclick="unlistProduct('<%= response._id%>')" style="width: 5rem;"
+                          >
+                            UnList
+                          </button>
+                          <%} else{%>
+                          <button
+                            class="btn btn-danger "
+                            onclick="listProduct('<%= response._id%>')"  style="width: 5rem;"
+                          >
+                            List </button
+                          ><%} %>
                   </td>
     
                  
@@ -61,3 +77,25 @@
       </div>
     </div>
   </section>
+  <script>
+    function listProduct(prodId) {
+      $.ajax({
+        url: "/admin/list_product/" + prodId,
+        method: "PUT",
+        success: (response) => {
+        
+          location.reload();
+        },
+      });
+    }
+    function unlistProduct(prodId) {
+      $.ajax({
+        url: "/admin/unlist_product/" + prodId,
+        method: "PUT",
+        success: (response) => {
+          
+          location.reload();
+        },
+      });
+    }
+  </script>

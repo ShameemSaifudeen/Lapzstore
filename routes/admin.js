@@ -42,6 +42,15 @@ router.post("/edit_product/:id",multer.editeduploads,adminController.postEditAdd
 
 router.get("/delete_product/:id",middleware.adminSession,adminController.deleteViewProduct)
 
+router.put("/list_product/:id",middleware.adminSession,adminController.listProduct);
+
+router.put("/unlist_product/:id",middleware.adminSession,adminController.unlistProduct
+);
+
+
+
+
+
 router.get("/coupons", middleware.adminSession, adminController.coupons);
 
 

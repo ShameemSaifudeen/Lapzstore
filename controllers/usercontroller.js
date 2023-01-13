@@ -3,6 +3,7 @@ const user = require('../models/connection')
 const otp = require('../thirdparty/otp')
 const ObjectId = require('mongodb').ObjectId
 const adminHelper = require('../helpers/adminHelpers')
+const { log } = require('console')
 
 
 const client = require('twilio')(otp.accountId, otp.authToken)
@@ -255,6 +256,9 @@ module.exports = {
 
     let cartItems = await userhelpers.viewCart(req.session.user.id)
     console.log(cartItems);
+    console.log("________________________________________________________________________");
+  
+  
     let total = await userhelpers.totalCheckOutAmount(req.session.user.id)
     userhelpers.checkOutpage(req.session.user.id).then((response) => {
 
@@ -312,6 +316,25 @@ module.exports = {
       res.render('user/orderslist', { response, userSession })
     })
 
+  },
+  orderDetails:async(req,res)=>{
+     
+    let details=req.query.order
+     
+     userhelpers.viewOrderDetails(details).then((response)=>{   
+      console.log(response.products);
+       let products=response.products
+       let address=response.address
+     let orderDetails=response.details
+      
+      res.render('user/order-details',{products,address,orderDetails})
+
+     })
+     
+  },
+  orderSucess:(req,res)=>{
+
+    res.render('user/order-sucess')
   },
   getCancelOrder: (req, res) => {
     console.log('--------', req.params.orderId);

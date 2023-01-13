@@ -153,6 +153,26 @@ console.log("category not exist");
         })
 
     },
+    listProduct: (prodId) => {
+        return new Promise(async (resolve, reject) => {
+        await user.product
+            .updateOne({ _id: prodId }, { $set: { productActive: true } })
+            .then(() => {
+            
+              resolve();
+            });
+        });
+      },
+      unlistProduct: (prodId) => {
+        return new Promise(async (resolve, reject) => {
+           await user.product
+            .updateOne({ _id: prodId }, { $set: { productActive: false } })
+            .then(() => {
+             
+              resolve();
+            });
+        });
+      },
     deleteViewProduct:(productId)=>{
         return new Promise(async(resolve, reject) => {
             await user.product.deleteOne({_id:productId}).then((response)=>{

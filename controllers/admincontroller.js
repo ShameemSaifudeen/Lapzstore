@@ -185,6 +185,18 @@ module.exports = {
 
   },
 
+  listProduct: (req, res) => {
+    adminHelper.listProduct(req.params.id).then(() => {
+      res.json({ status: true });
+    });
+  },
+  unlistProduct: (req, res) => {
+    // console.log(req.params.id + "in unlist");
+    adminHelper.unlistProduct(req.params.id).then(() => {
+      res.json({ status: false });
+    });
+  },
+
 
   //delete view product 
 

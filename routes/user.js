@@ -47,6 +47,10 @@ router.get('/order', middleware.userSession, controllers.getOrderPage)
 
 router.get('/cancel_order/:orderId', middleware.userSession, controllers.getCancelOrder)
 
+router.get('/order_details',middleware.userSession,controllers.orderDetails)
+
+router.get('/order_success',middleware.userSession,controllers.orderSucess)
+
 router.get("/add_address", middleware.userSession, controllers.getAddresspage)
 
 router.post('/add_address', middleware.userSession, controllers.postAddresspage)

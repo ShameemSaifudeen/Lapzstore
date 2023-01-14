@@ -1,3 +1,4 @@
+<div class="container">
 <div class="card-body">
   <div class="table-responsive">
     <div class="table-responsive">
@@ -17,9 +18,9 @@
             
             <td><a href="#" class="fw-bold"> <%=response.orders._id%></a></td>
       
-            <td><%=response.orders.createdAt%></td>
+            <td><%=getDate(response.orders.createdAt)%></td>
             <td>
-              <%=response.orders.OrderStatus%>
+              <%=response.orders.orderStatus%>
             </td>
             <td>
              
@@ -36,6 +37,7 @@
     </div>
   </div>
 
+</div>
 </div>
 
 <script>

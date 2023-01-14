@@ -180,15 +180,15 @@ module.exports = {
 
 
   },
-  category: async(req, res) => {
+  category: async (req, res) => {
     viewCategory = await adminHelper.viewAddCategory()
 
-    userhelpers.category(req.query.cname).then((response)=>{
-      
-      res.render('user/filter-by-category',{ response, userSession,viewCategory,count})
+    userhelpers.category(req.query.cname).then((response) => {
+
+      res.render('user/filter-by-category', { response, userSession, viewCategory, count })
     })
   },
-  
+
 
   getProductDetails: async (req, res) => {
     count = await userhelpers.getCartItemsCount(req.session.user.id)
@@ -217,7 +217,7 @@ module.exports = {
     // console.log(req);
     let userId = req.session.user
     let total = await userhelpers.totalCheckOutAmount(req.session.user.id)
-    let count = await userhelpers.getCartItemsCount(req.session.user.id)
+    count = await userhelpers.getCartItemsCount(req.session.user.id)
 
     let cartItems = await userhelpers.viewCart(req.session.user.id)
     // console.log(cartItems);
@@ -257,13 +257,13 @@ module.exports = {
     let cartItems = await userhelpers.viewCart(req.session.user.id)
     console.log(cartItems);
     console.log("________________________________________________________________________");
-  
-  
+
+
     let total = await userhelpers.totalCheckOutAmount(req.session.user.id)
     userhelpers.checkOutpage(req.session.user.id).then((response) => {
 
 
-      res.render('user/checkout', { users, cartItems, total, response, userSession })
+      res.render('user/checkout', { users, cartItems, total, response, userSession, count })
     })
 
   },
@@ -311,35 +311,57 @@ module.exports = {
 
   },
   getOrderPage: (req, res) => {
+    const getDate = (date) => {
+      let orderDate = new Date(date);
+      let day = orderDate.getDate();
+      let month = orderDate.getMonth() + 1;
+      let year = orderDate.getFullYear();
+      let hours = date.getHours();
+      let minutes = date.getMinutes();
+      let seconds = date.getSeconds();
+      return `${isNaN(day) ? "00" : day}-${isNaN(month) ? "00" : month}-${isNaN(year) ? "0000" : year
+        } ${date.getHours(hours)}:${date.getMinutes(minutes)}:${date.getSeconds(seconds)}`;
+    };
     userhelpers.orderPage(req.session.user.id).then((response) => {
 
-      res.render('user/orderslist', { response, userSession })
+      res.render('user/orderslist', { response, userSession, count, getDate })
     })
 
   },
-  orderDetails:async(req,res)=>{
-     
-    let details=req.query.order
-     
-     userhelpers.viewOrderDetails(details).then((response)=>{   
+  orderDetails: async (req, res) => {
+
+    let details = req.query.order
+    const getDate = (date) => {
+      let orderDate = new Date(date);
+      let day = orderDate.getDate();
+      let month = orderDate.getMonth() + 1;
+      let year = orderDate.getFullYear();
+      let hours = date.getHours();
+      let minutes = date.getMinutes();
+      let seconds = date.getSeconds();
+      return `${isNaN(day) ? "00" : day}-${isNaN(month) ? "00" : month}-${isNaN(year) ? "0000" : year
+        } ${date.getHours(hours)}:${date.getMinutes(minutes)}:${date.getSeconds(seconds)}`;
+    };
+
+    userhelpers.viewOrderDetails(details).then((response) => {
       console.log(response.products);
-       let products=response.products
-       let address=response.address
-     let orderDetails=response.details
-      
-      res.render('user/order-details',{products,address,orderDetails})
+      let products = response.products
+      let address = response.address
+      let orderDetails = response.details
 
-     })
-     
+      res.render('user/order-details', { products, address, orderDetails, userSession, count, getDate })
+
+    })
+
   },
-  orderSucess:(req,res)=>{
+  orderSucess: (req, res) => {
 
-    res.render('user/order-sucess')
+    res.render('user/order-success', { userSession, count })
   },
   getCancelOrder: (req, res) => {
-    console.log('--------', req.params.orderId);
+    console.log('--------', req.query.orderid);
 
-    userhelpers.cancelOrder(req.params.orderId, req.session.user.id).then((response) => {
+    userhelpers.cancelOrder(req.query.orderid, req.session.user.id).then((response) => {
       console.log('++++++++', response);
       res.json(response)
     })

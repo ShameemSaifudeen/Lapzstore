@@ -13,7 +13,7 @@
               <div class="d-flex justify-content-between align-items-center mb-4">
                 <p class="lead fw-normal mb-0" style="color: black;">Order Details </p>
                 <p class="small text-muted mb-0">Order Id : <%=orderDetails._id%></p>
-                <p class="small text-muted mb-0">Ordered Date:<%=orderDetails.createdAt%> </p>
+                <p class="small text-muted mb-0">Ordered Date:<%= getDate(orderDetails.createdAt)%> </p>
               </div>
               <div class="card shadow-0 border mb-4">
               <% products?.forEach(function(response) { %>
@@ -21,7 +21,7 @@
                 <div class="card-body">
                   <div class="row">
                     <div class="col-md-2">
-                      <img src="/uploads/<%=response.image[0]%>"
+                      <img src="/uploads/<%=response.image[0] %>"
                         class="img-fluid" alt="Phone">
                     </div>
                     <div class="col-md-2 text-center d-flex justify-content-center align-items-center">
@@ -35,7 +35,7 @@
                       <p class="text-muted mb-0 small"><%=response.quantity%></p>
                     </div>
                     <div class="col-md-2 text-center d-flex justify-content-center align-items-center">
-                      <p class="text-muted mb-0 small"><%=response.productsPrice%></p>
+                      <p class="text-muted mb-0 small">₹<%=response.productsPrice%></p>
                     </div>
 
                   </div>
@@ -43,9 +43,10 @@
                   <hr class="mb-4" style="background-color: #e0e0e0; opacity: 1;">
                 
                 </div>
-                <% }) %> 
+                <% }) %>
 
-              </div>
+
+</div>
               <div class="d-flex justify-content-between pt-2">
                 <p class="fw-bold mb-0">Address Details</p>
                 <p class="text-muted mb-0"><span class="fw-bold me-4"></span></p>
@@ -57,8 +58,22 @@
               
                 <div class="d-flex justify-content-between pt-2">
                   <p class="fw-bold mb-0"><%= address[0].fname%></p>
-                  <p class="text-muted mb-0"><span class="fw-bold me-4">Order Status:</span> </p>
-          <buttton  class="btn btn-primary text-center" style="background: red; height:2rem"> cancell</buttton>
+                                                                             <%if(orderDetails.  orderStatus=='success'){ %>   
+                  <p class="text-muted mb-0"><span class="fw-bold me-4" ><span>Order Status</span>:   <span style="color:green;"><%=orderDetails. orderStatus%> </span> </p>
+                                                                             <%} else if(orderDetails. orderStatus=='Delivered') {%>
+                  <p class="text-muted mb-0"><span class="fw-bold me-4" ><span>Order Status</span>:   <span style="color: orange;"><%=orderDetails. orderStatus%> </span> </p>
+                                    
+                                                                            <%} else  {%>
+                                                                              
+                  <p class="text-muted mb-0"><span class="fw-bold me-4" ><span>Order Status</span>:   <span style="color: red;"><%=orderDetails. orderStatus%> </span> </p>
+                                                                              
+                                                                              <%} %>
+                                                                                <%if(orderDetails. orderStatus=='success'){ %>   
+          <buttton  class="btn btn-primary text-center" style="background: red; height:3rem" onclick="cancelorder('<%=orderDetails._id%>')">Cancell</buttton>
+                                                                                  <%} %>
+                                                                                  <%if(orderDetails. orderStatus=='Delivered'){ %>   
+                                                                    <buttton         class="btn btn-primary text-center" style="background: yellow; height:2rem" onclick="cancelorder('<%=orderDetails._id%>')">Return</buttton>
+                                                                                    <%} %>
 
 
 </div>
@@ -68,7 +83,7 @@
                 </div>
                 <div class="d-flex justify-content-between pt-2">
                   <p class="fw-bold mb-0"><%= address[0].street%></p>
-                  <p class="text-muted mb-0"><span class="fw-bold me-4">Total</span> <%=orderDetails.totalPrice%></p>
+                  <p class="text-muted mb-0"><span class="fw-bold me-4">Total</span> ₹<%=orderDetails.totalPrice%></p>
                 </div>
                 <div class="d-flex justify-content-between pt-2">
                   <p class="fw-bold mb-0"><%= address[0].city%></p>
@@ -91,7 +106,7 @@
             <div class="card-footer border-0 px-4 py-5"
               style="background-color: whitesmoke; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">
               <h5 class="d-flex align-items-center justify-content-end text-black text-uppercase mb-0">Total
-                paid: <%=orderDetails.totalPrice%><span class="h2 mb-0 ms-2"></span></h5>
+                paid: ₹<%=orderDetails.totalPrice%><span class="h2 mb-0 ms-2"></span></h5>
             </div>
           </div>
         </div>
@@ -105,3 +120,31 @@
       </div>
     </div>
   </section>
+
+
+
+
+  <script>
+
+    function cancelorder(orderid){
+      console.log(orderid);
+
+   $.ajax({  
+
+     url:'/cancel_order?orderid='+orderid,
+     method:'put',
+     success:(response)=>{
+      if(response){
+        location.reload()
+      }
+
+     }
+   })
+
+    }
+
+
+
+
+
+  </script>

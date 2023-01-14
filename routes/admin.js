@@ -13,7 +13,6 @@ router.get("/login",middleware.adminSession,adminController.getAdminLogin);
 router.post("/login",adminController.postAdminLogin)
 
 router.get("/logout",adminController.getAdminLogOut)
-
  
 router.get("/view_users",middleware.adminSession,adminController.getViewUser)
 
@@ -21,14 +20,11 @@ router.get("/block_users/:id",middleware.adminSession,adminController.getBlockUs
 
 router.get("/unblock_users/:id",middleware.adminSession,adminController.getUnblockUser);
 
-
 router.get("/add_category",middleware.adminSession, adminController.getCategory)
 
 router.post("/add_category", adminController.postCategory)
 
 router.get("/delete_category/:id",middleware.adminSession,adminController.getDeleteCategory)
-
-
 
 router.get("/add_product",middleware.adminSession, adminController.getAddProduct);
 
@@ -44,15 +40,9 @@ router.get("/delete_product/:id",middleware.adminSession,adminController.deleteV
 
 router.put("/list_product/:id",middleware.adminSession,adminController.listProduct);
 
-router.put("/unlist_product/:id",middleware.adminSession,adminController.unlistProduct
-);
-
-
-
-
+router.put("/unlist_product/:id",middleware.adminSession,adminController.unlistProduct);
 
 router.get("/coupons", middleware.adminSession, adminController.coupons);
-
 
 router.get("/add_coupons", middleware.adminSession, adminController.addCoupons);
 
@@ -62,9 +52,14 @@ router.get("/generate_coupon",middleware.adminSession,adminController.generateCo
 
 router.delete("/coupon_delete/:id",middleware.adminSession,adminController.deleteCoupon);
 
-
 router.get('/orders',middleware.adminSession,adminController.getOrders)
 
+router.get("/edit_category/:id",middleware.adminSession,adminController.getEditCategory)
+
+router.post("/edit_category/:id",middleware.adminSession,adminController.postEditCategory)
+
+
+module.exports = router;
 
 
 
@@ -84,11 +79,42 @@ router.get('/orders',middleware.adminSession,adminController.getOrders)
 
 
 
-router.get('/banners',  adminController.banner)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// router.get('/banners',  adminController.banner)
 
 // router.get('/banner-management',  controllers.bannerPage)
 
-router.get('/add_banner',  adminController.addBanner)
+// router.get('/add_banner',  adminController.addBanner)
 
 // router.post('/add-banner', controllers.addbannerPost)
 
@@ -112,16 +138,9 @@ router.get('/add_banner',  adminController.addBanner)
 
 
 
-router.get("/edit_category/:id",middleware.adminSession,adminController.getEditCategory)
-
-router.post("/edit_category/:id",middleware.adminSession,adminController.postEditCategory)
 
 
 
 
 
-router.get("/add_sub", function (req, res) {
-  res.render("admin/add-subcategory", { layout: "adminLayout" });
-});
-
-module.exports = router;
+// router.get("/add_sub", function (req, res) { res.render("admin/add-subcategory", { layout: "adminLayout" });});

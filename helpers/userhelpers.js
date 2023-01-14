@@ -570,7 +570,7 @@ module.exports = {
       total = total * 100
       console.log(total);
       var options = {
-        amount: parseInt(total),
+        amount: Number(total),
         currency: "INR",
         receipt: "" + orderId,
       }
@@ -623,7 +623,7 @@ module.exports = {
           { 'orders._id': orderId },
           {
             $set: {
-              'orders.$.OrderStatus': 'success',
+              'orders.$.orderStatus': 'success',
               'orders.$.paymentStatus': 'paid'
             }
           }
@@ -742,7 +742,7 @@ module.exports = {
       let orders = await user.order.find({ 'orders._id': orderId })
       console.log('match---', orders);
 
-      console.log(orders[0].orders[0]._id);
+    
 
       let orderIndex = orders[0].orders.findIndex(orders => orders._id == orderId)
       console.log(orderIndex);

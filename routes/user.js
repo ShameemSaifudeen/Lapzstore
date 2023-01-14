@@ -45,7 +45,7 @@ router.post('/verify_payment', middleware.userSession, controllers.postVerifyPay
 
 router.get('/order', middleware.userSession, controllers.getOrderPage)
 
-router.get('/cancel_order/:orderId', middleware.userSession, controllers.getCancelOrder)
+router.put('/cancel_order', middleware.userSession, controllers.getCancelOrder)
 
 router.get('/order_details',middleware.userSession,controllers.orderDetails)
 

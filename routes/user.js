@@ -55,7 +55,7 @@ router.get("/add_address", middleware.userSession, controllers.getAddresspage)
 
 router.post('/add_address', middleware.userSession, controllers.postAddresspage)
 
-router.get("/apply_coupon", middleware.userSession, controllers.applyCoupon);
+router.post("/apply_coupon", middleware.userSession, controllers.applyCoupon);
 
 router.get("/coupon_validator",middleware.userSession, controllers.couponValidator);
 

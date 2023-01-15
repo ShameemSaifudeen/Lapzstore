@@ -52,11 +52,17 @@ router.get("/generate_coupon",middleware.adminSession,adminController.generateCo
 
 router.delete("/coupon_delete/:id",middleware.adminSession,adminController.deleteCoupon);
 
-router.get('/orders',middleware.adminSession,adminController.getOrders)
+// router.get('/orders',middleware.adminSession,adminController.getOrders)
 
 router.get("/edit_category/:id",middleware.adminSession,adminController.getEditCategory)
 
 router.post("/edit_category/:id",middleware.adminSession,adminController.postEditCategory)
+
+router.get("/orders_list", middleware.adminSession, adminController.getOrderList)
+
+router.get("/order_details", middleware.adminSession, adminController.getOrderDetails)
+
+router.post("/order_details", middleware.adminSession, adminController. postOrderDetails)
 
 
 module.exports = router;

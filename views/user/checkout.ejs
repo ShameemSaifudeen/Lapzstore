@@ -19,7 +19,7 @@
 
 
 
-                  <input type="radio" id="address1" name="address" value="<%=response.item._id%>" style="height: 10px;width:10px;">
+                  <input checked type="radio" id="address1" name="address" value="<%=response.item._id%>" style="height: 10px;width:10px;">
 
                   <h4>
                     <%=response.item.fname%> <%=response.item.lname%>
@@ -62,7 +62,7 @@
               <div class="payment_method">
                 <p>Payment Method</p>
                 <div class="form-check">
-                  <input class="form-check-input" type="radio" name="payment-method" value="COD">
+                  <input checked class="form-check-input" type="radio" name="payment-method" value="COD">
                   <label class="form-check-label" for="flexRadioDefault1">
                     COD
                   </label>
@@ -111,7 +111,7 @@
                   <tr>
 
 
-                    <td class="image product-thumbnail"><img src="/uploads/<%=cartItems.cartItems.Image %>"></td>
+                    <td class="image product-thumbnail"><img src="/uploads/<%=cartItems.cartItems.Image[0] %>"></td>
                     <td>
 
                       <h5><a href="shop-product-full.html">
@@ -187,9 +187,9 @@
       "image": "https://example.com/your_logo",
       "order_id": order.id, //This is a sample Order ID. Pass the id obtained in the response of Step 1
       "handler": function (response) {
-        alert(response.razorpay_payment_id);
-        alert(response.razorpay_order_id);
-        alert(response.razorpay_signature)
+        // alert(response.razorpay_payment_id);
+        // alert(response.razorpay_order_id);
+        // alert(response.razorpay_signature)
         verifypayment(response, order)
       },
       "prefill": {

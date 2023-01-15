@@ -61,7 +61,7 @@
                                                                              <%if(orderDetails.  orderStatus=='success'){ %>   
                   <p class="text-muted mb-0"><span class="fw-bold me-4" ><span>Order Status</span>:   <span style="color:green;"><%=orderDetails. orderStatus%> </span> </p>
                                                                              <%} else if(orderDetails. orderStatus=='Delivered') {%>
-                  <p class="text-muted mb-0"><span class="fw-bold me-4" ><span>Order Status</span>:   <span style="color: orange;"><%=orderDetails. orderStatus%> </span> </p>
+                  <p class="text-muted mb-0"><span class="fw-bold me-4" ><span>Order Status</span>:   <span style="color: blueviolet;"><%=orderDetails. orderStatus%> </span> </p>
                                     
                                                                             <%} else  {%>
                                                                               
@@ -72,7 +72,7 @@
           <buttton  class="btn btn-primary text-center" style="background: red; height:3rem" onclick="cancelorder('<%=orderDetails._id%>')">Cancell</buttton>
                                                                                   <%} %>
                                                                                   <%if(orderDetails. orderStatus=='Delivered'){ %>   
-                                                                    <buttton         class="btn btn-primary text-center" style="background: yellow; height:2rem" onclick="cancelorder('<%=orderDetails._id%>')">Return</buttton>
+                                                                    <buttton         class="btn btn-primary text-center" style="background: orange; height:3rem" >Return</buttton>
                                                                                     <%} %>
 
 

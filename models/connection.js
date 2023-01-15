@@ -151,7 +151,7 @@ const orderSchema = new mongoose.Schema({
               default: new Date()
           }, 
           orderStatus:{
-            type:String,default:"success"
+            type:String
         },
       }
   ]

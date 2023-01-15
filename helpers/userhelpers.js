@@ -447,6 +447,8 @@ module.exports = {
   },
   placeOrder: (orderData, total) => {
     console.log(orderData.address);
+    console.log("_______________________________________________________________________________");
+    console.log(orderData.user);
     return new Promise(async (resolve, reject) => {
 
       let productdetails = await user.cart.aggregate([
@@ -518,10 +520,10 @@ module.exports = {
         name: orderaddress.fname,
         paymentStatus: status,
         paymentmode: orderData['payment-method'],
-        paymenmethod: orderData['payment-method'],
+        // paymenmethod: orderData['payment-method'],
         productDetails: productdetails,
         shippingAddress: orderaddress,
-        OrderStatus: orderstatus,
+        orderStatus: orderstatus,
         totalPrice: total
 
       }
@@ -722,7 +724,7 @@ module.exports = {
  
    const productDetails = productid.orders.map(object => object.productDetails);
    const address= productid.orders.map(object => object.shippingAddress);
-   const products = productDetails.map(object => object[0])
+   const products = productDetails.map(object => object)
      
         resolve({products,address, details,})
       
@@ -783,11 +785,12 @@ module.exports = {
               //checking max offer value
               let discountAmount = (total * coupon.discountPercentage) / 100;
               if (discountAmount > coupon.maxDiscountValue) {
-
                 discountAmount = coupon.maxDiscountValue;
-                resolve({ status: true, discountAmount: discountAmount });
+                total=total-discountAmount
+                resolve({ status: true, discountAmount: discountAmount,total:total });
               } else {
-                resolve({ status: true, discountAmount: discountAmount });
+                total=total-discountAmount
+                resolve({ status: true, discountAmount: discountAmount ,total:total});
               }
             } else {
               console.log("ded1");

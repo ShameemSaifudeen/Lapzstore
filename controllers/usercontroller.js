@@ -9,7 +9,7 @@ const { log } = require('console')
 const client = require('twilio')(otp.accountId, otp.authToken)
 
 let userSession, number, loggedUser, loggedUserId, homeList;
-let count, numberStatus, otpStatus
+let count, numberStatus, otpStatus, total
 
 
 module.exports = {
@@ -258,8 +258,15 @@ module.exports = {
     console.log(cartItems);
     console.log("________________________________________________________________________");
 
+    if (req.session.user.total) {
+      total = req.session.user.total
+    }
+    
+    else {
 
-    let total = await userhelpers.totalCheckOutAmount(req.session.user.id)
+      total = await userhelpers.totalCheckOutAmount(req.session.user.id)
+    }
+    
     userhelpers.checkOutpage(req.session.user.id).then((response) => {
 
 
@@ -270,7 +277,14 @@ module.exports = {
   postcheckOutPage: async (req, res) => {
 
 
-    let total = await userhelpers.totalCheckOutAmount(req.session.user.id)
+    if (req.session.user.total) {
+      total = req.session.user.total
+    }
+    else {
+
+      total = await userhelpers.totalCheckOutAmount(req.session.user.id)
+    }
+    req.session.user.total=null
     let order = await userhelpers.placeOrder(req.body, total).then((response) => {
 
 
@@ -294,19 +308,20 @@ module.exports = {
   },
   postVerifyPayment: (req, res) => {
     console.log(req.body);
-    userhelpers.verifyPayment(req.body).then(() => {
-      console.log(req.body);
+    userhelpers.
+      verifyPayment(req.body).then(() => {
+        console.log(req.body);
 
-      userhelpers.changePaymentStatus(req.session.user.id, req.body['order[receipt]']).then(() => {
+        userhelpers.changePaymentStatus(req.session.user.id, req.body['order[receipt]']).then(() => {
 
-        res.json({ status: true })
+          res.json({ status: true })
 
-      }).catch((err) => {
-        console.log(err);
-        res.json({ status: false, err })
+        }).catch((err) => {
+          console.log(err);
+          res.json({ status: false, err })
+        })
+
       })
-
-    })
 
 
   },
@@ -345,7 +360,8 @@ module.exports = {
 
     userhelpers.viewOrderDetails(details).then((response) => {
       console.log(response.products);
-      let products = response.products
+      let products = response.products[0]
+      console.log(products);
       let address = response.address
       let orderDetails = response.details
 
@@ -392,13 +408,16 @@ module.exports = {
   },
   applyCoupon: async (req, res) => {
     let code = req.query.code;
-    let total = await userhelpers.totalCheckOutAmount(req.session.user);
-    userhelpers.applyCoupon(code, total).then((response) => {
+    // let total = await userhelpers.totalCheckOutAmount(req.session.user);
+    userhelpers.applyCoupon(code, req.body.total).then((response) => {
+
+      req.session.user.total = response.total
       couponPrice = response.discountAmount ? response.discountAmount : 0;
       res.json(response);
     });
   },
   couponValidator: async (req, res) => {
+
     let code = req.query.code;
     userhelpers
       .couponValidator(code, req.session.user.id)

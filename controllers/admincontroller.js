@@ -260,34 +260,89 @@ module.exports = {
     });
   },
 
-    getOrders: (req, res) => {
-      res.render('admin/orders', { layout: "adminLayout", adminStatus })
-    },
+  getOrderList: (req, res) => {
 
 
+    adminHelper.orderPage().then((response) => {
+      const getDate = (date) => {
+        let orderDate = new Date(date);
+        let day = orderDate.getDate();
+        let month = orderDate.getMonth() + 1;
+        let year = orderDate.getFullYear();
+        let hours = date.getHours();
+        let minutes = date.getMinutes();
+        let seconds = date.getSeconds();
+        return `${isNaN(day) ? "00" : day}-${isNaN(month) ? "00" : month}-${isNaN(year) ? "0000" : year
+          } ${date.getHours(hours)}:${date.getMinutes(minutes)}:${date.getSeconds(seconds)}`;
+      };
+      res.render('admin/order-List', { layout: 'adminLayout',adminStatus, response, getDate })
+    })
+  },
 
 
+  // get order details
 
 
+  getOrderDetails: (req, res) => {
+    console.log(req.query.orderid);
+    adminHelper.orderDetails(req.query.orderid).then((order) => {
+      const getDate = (date) => {
+        let orderDate = new Date(date);
+        let day = orderDate.getDate();
+        let month = orderDate.getMonth() + 1;
+        let year = orderDate.getFullYear();
+        let hours = date.getHours();
+        let minutes = date.getMinutes();
+        let seconds = date.getSeconds();
+        return `${isNaN(day) ? "00" : day}-${isNaN(month) ? "00" : month}-${isNaN(year) ? "0000" : year
+          } ${date.getHours(hours)}:${date.getMinutes(minutes)}:${date.getSeconds(seconds)}`;
+      };
+       
+      let products = order.orders[0].productDetails
+      let total = order.orders
+      res.render('admin/order-details', { layout: 'adminLayout',adminStatus, order, products, total, getDate })
+    })
 
+  },
 
+  // change user payments status
 
+  postOrderDetails:(req,res)=>{
+    console.log(typeof req.query.orderId);
+   console.log(req.body);
+    console.log(req.body);
+    adminHelper.changeOrderStatus(req.query.orderId,req.body).then((response)=>{
+             res.redirect('/admin/orders_list')
+    })
 
-
-
-
-
-
-
-
-
-
-      banner: (req, res) => {
-        res.render('admin/banner-management-home', { layout: "adminLayout", adminStatus })
-      },
-        addBanner: (req, res) => {
-          res.render('admin/addBanner', { layout: "adminLayout", adminStatus })
-        },
+  }
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      // banner: (req, res) => {
+      //   res.render('admin/banner-management-home', { layout: "adminLayout", adminStatus })
+      // },
+      //   addBanner: (req, res) => {
+      //     res.render('admin/addBanner', { layout: "adminLayout", adminStatus })
+      //   },
+
+
 

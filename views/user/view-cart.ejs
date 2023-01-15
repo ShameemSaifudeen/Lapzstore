@@ -231,7 +231,10 @@ function couponValidator(elem, total) {
               if (response.status == true) {
                 $.ajax({
                   url: "/apply_coupon?code=" + code,
-                  method: "get",
+                  method: "post",
+                  data:{
+                    total:total
+                  },
                   success: (response) => {
                     console.log(response.discountAmount + "i am discount");
                     console.log(response.status + "i am status");

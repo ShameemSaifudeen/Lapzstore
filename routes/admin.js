@@ -1,6 +1,6 @@
 var express = require("express");
 const { getMaxListeners } = require("../app");
-const adminController=require('../controllers/admincontroller')
+const adminController=require('../controllers/admin/admincontroller')
 var router = express.Router();
 const user = require("../models/connection");
 const multer = require('../multer/multer')
@@ -63,6 +63,10 @@ router.get("/orders_list", middleware.adminSession, adminController.getOrderList
 router.get("/order_details", middleware.adminSession, adminController.getOrderDetails)
 
 router.post("/order_details", middleware.adminSession, adminController. postOrderDetails)
+
+router.get('/sales_report', middleware.adminSession,adminController.getSalesReport)
+
+router.post('/sales_report', adminController.postSalesReport)
 
 
 module.exports = router;

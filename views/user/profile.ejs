@@ -1,0 +1,106 @@
+
+
+
+ 
+    
+    <main class="main-wrap container">
+      
+        <section class="content-main">
+            <div class="content-header ">
+                <h2 class="content-title" style="margin-top: 20px;margin-bottom: 20px;">Hi <%=data.username%> </h2>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <div class="row gx-5">
+                        <aside class="col-lg-3 border-end">
+                            <nav class="nav nav-pills flex-lg-column mb-4">
+                                <a class="nav-link" aria-current="page" href="#">General</a>
+                                <a class="nav-link" href="/reset_password">Reset Password</a>
+                                <a class="nav-link" href="/view_address">Address</a>
+                                <a class="nav-link" href="/order">Orders</a>
+                                <a class="nav-link" href="#">Update Number</a>
+                                <a class="nav-link text-danger" href="/logout">Logout</a>
+                            </nav>
+                        </aside>
+                        <div class="col-lg-9">
+                            <section class="content-body p-xl-4">
+                                <form id="profile">
+
+                                    <div class="row">
+                                        <div class="col-lg-8">
+                                            <div class="row gx-3">
+                                                <div class="col-6 mb-3">
+                                                    <label class="form-label">First Name</label>
+                                                    <input class="form-control" name="fname" type="text" value="<%=data.username%>" >
+                                    
+                                                </div> <!-- col .// -->
+                                                <div class="col-6 mb-3">
+
+                                                <label class="form-label">Last Name</label>
+                                            
+                                                  <input class="form-control" name="lname" type="text" value="<%=data.username%>" >
+                                                </div>
+                                                <div class="col-lg-6  mb-3">
+                                                    <label class="form-label">Email</label>
+                                                    <input class="form-control" name="email" type="email" value="<%=data.email%>">
+                                                </div> <!-- col .// -->
+                                                <div class="col-lg-6  mb-3">
+                                                    <label class="form-label">Phone</label>
+                                                    <input class="form-control" name="phone" type="number" value="<%=data.phonenumber%>">
+                                                </div> <!-- col .// -->
+                                             
+                                               
+                                                
+                                            </div> <!-- row.// -->
+                                        </div> <!-- col.// -->
+                                      
+                                    </div> <!-- row.// -->
+                                    <br>
+                                    <button class="btn btn-primary" onclick="changeProfile('<%=data._id%>')">Save changes</button>
+
+                                </form>
+                                
+                                
+                            </section> <!-- content-body .// -->
+                        </div> <!-- col.// -->
+                    </div> <!-- row.// -->
+                </div> <!-- card body end// -->
+            </div> <!-- card end// -->
+        </section> <!-- content-main end// -->
+        <footer class="main-footer font-xs">
+            <div class="row pb-30 pt-15">
+                <div class="col-sm-6">
+                    <script>
+                    document.write(new Date().getFullYear())
+                    </script> ©,Lapzcart Ecommerce .
+                </div>
+                <div class="col-sm-6">
+                    <div class="text-sm-end">
+                        All rights reserved
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </main>
+
+<!-- Mirrored from wp.alithemes.com/html/evara/evara-backend/page-settings-1.html by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 01 Aug 2021 15:33:49 GMT -->
+</html>
+
+<script>
+  function changeProfile(profileId) {
+
+    
+    $('#profile').submit((e) =>{
+        e.preventDefault();
+        $.ajax({
+        url: '/update_profile?userId='+profileId,
+        method: "PUT",
+        data:$('#profile').serialize(),
+        success: (response) => {
+            location.reload();
+        },
+        });
+    })
+
+}
+</script>

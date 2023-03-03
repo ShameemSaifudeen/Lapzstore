@@ -49,8 +49,8 @@
                             </div>
                         </div> -->
           <div class="row product-grid-3">
-            <% response.forEach(function(response,index) { %>
-                <% if(response.productActive==true) { %>
+            <% response.forEach(function(response,index) { %> <%
+            if(response.productActive==true) { %>
 
             <div class="col-lg-4 col-md-4 col-12 col-sm-6">
               <div class="product-cart-wrap mb-30">
@@ -76,9 +76,14 @@
                     ></a>
                     <a
                       aria-label="Add To Wishlist"
-                      class="action-btn small hover-up"
-                      href="shop-wishlist.html"
-                      tabindex="0"
+                      class="action-btn hover-up"
+                      onclick="addtowishlist('<%-response._id%>');Swal.fire({
+                        position: 'center',
+                        icon: 'success',
+                        title: 'Product is successfully added to Wishlist',
+                        showConfirmButton: false,
+                        timer: 1500
+                      })"
                       ><i class="fi-rs-heart"></i
                     ></a>
                     <a
@@ -125,8 +130,7 @@
                 </div>
               </div>
             </div>
-            <%} %>
-            <% }) %>
+            <%} %> <% }) %>
           </div>
           <!--pagination-->
           <div class="pagination-area mt-15 mb-sm-5 mb-lg-0">
@@ -163,6 +167,18 @@
               </li>
               <% }) %>
             </ul>
+            <div class="mt-5"></div>
+            <form id="sort-form" method="POST" action="/sort">
+              <div class="sort-container">
+                <label for="sort-select"><h5 class="section-title style-1 mb-30 wow fadeIn animated">Sort</h5> </label>
+                <select id="sort-select" name="selectedValue" onchange="this.form.submit()">
+                  <option value=""><a href="#">Sort By Price:</a></option>
+
+                  <option value="price-low-to-high"><a href="#">Low to High</a></option>
+                  <option  value="price-high-to-low"><a href="#">High to Low</a></option>
+                </select>
+              </div>
+            </form>
           </div>
         </div>
       </div>
@@ -185,4 +201,19 @@
       },
     });
   }
+  function addtowishlist(proId) {
+  console.log(proId);
+    $.ajax({
+          url: '/add_to_wishlist?wishid=' + proId,
+          method: 'get',
+          success: (response) => {
+            let count=$('#wish-count').html()
+                 count=parseInt(count)+1
+                 $("#wish-count").html(count)
+            
+          }
+    
+})
+
+}
 </script>

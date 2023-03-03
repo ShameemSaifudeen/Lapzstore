@@ -10,7 +10,14 @@
         
         <div class="header-right">
           <div class="search-style-2">
-            <form action="#">
+            <form action="/search" method="post"  >
+             
+              <input type="text"  name="search"  id="keyword" placeholder="Search for items..." />
+
+              <button type="submit" style="display: none;">Submit</button>
+
+            </form>
+            <!-- <form action="#"> -->
               <!-- <select class="select-active">
                 <option>All Categories</option>
                 <option>Women's</option>
@@ -24,8 +31,8 @@
                 <option>Shoes</option>
                 <option>Mother & Kids</option>
               </select> -->
-              <input type="text" placeholder="Search for items..." />
-            </form>
+              <!-- <input type="text" placeholder="Search for items..." /> -->
+            <!-- </form> -->
           </div>
           <div class="header-action-right">
             <div class="header-action-2">
@@ -40,19 +47,22 @@
                else{%>
                 
   
-                  <i class="fi-rs-user"></i><a href="/logout" style="color: black">Log out</a>
+                  <i class="fi-rs-user"></i><a href="/profile" style="color: black">Profile</a>
                
                  
                  <%}
                %>
               <div class="header-action-icon-2">
-                <a href="shop-wishlist.html">
+                <a href="/wishlist">
                   <img
                     class="svgInject"
                     alt="Evara"
                     src="assets/imgs/theme/icons/icon-heart.svg"
                   />
-                  <span class="pro-count blue">4</span>
+                  <% if(locals.userSession){%>
+                  <span class="pro-count blue" id="wish-count"><%= locals.wishCount %></span>
+                  <%}%>
+
                 </a>
               </div>
               <div class="header-action-icon-2">

@@ -9,6 +9,7 @@ const razorpay = require('../thirdparty/razorpay')
 
 const otp = require('../thirdparty/otp');
 const { log } = require("console");
+const { resolve } = require("path");
 
 const client = require('twilio')(otp.accountId, otp.authToken)
 
@@ -93,6 +94,69 @@ module.exports = {
 
 
   },
+  // profile user
+  findUser:(userId)=>{
+    return new Promise(async(resolve, reject) => {
+      await user.user.findById({_id:userId}).then((user)=>{
+        
+        resolve(user)
+      })
+      
+    })
+  },
+
+  //profile update
+  updateProfile:async (data, userId)=>
+  {
+    let number = data.phone;
+  
+    console.log(data, userId);
+    await new Promise(async (resolve, reject) => {
+      
+      await user.user.updateOne({ _id : userId },
+        {
+          $set: {
+            username: data.fname,
+            email: data.email,
+            phonenumber: Number(number),
+          }
+        }).then((data)=>{
+          console.log(data);
+          resolve(data)
+        });
+    });
+    console.log(response);
+  },
+  verifyPassword:(userData,userId)=>{
+
+    return new Promise(async(resolve, reject) => {
+
+      let users=await user.user.findOne({_id:userId})
+      console.log(users);
+      await bcrypt
+      .compare(userData.password, users.Password)
+      .then(async (status) => {
+        if(status){
+          let hashedPassword = await bcrypt.hash(userData.password2, 10);
+          await user.user.updateOne(
+            {_id:userId},
+            {$set:{
+              Password:hashedPassword
+            }}
+            ).then((response)=>{
+              console.log(response);
+              resolve(response)
+            })
+        }
+        else{
+          resolve(false)
+        }
+      }
+      );
+    })
+  },
+
+
   documentCount: () => {
     return new Promise(async (resolve, reject) => {
       await user.product.find().countDocuments().then((documents) => {
@@ -409,6 +473,132 @@ module.exports = {
 
 
   },
+
+  // wishlist
+
+
+  AddToWishList: (proId, userId) => {
+    let proObj = {
+      productId: proId
+    };
+
+    return new Promise(async (resolve, reject) => {
+      let wishlist = await user.wishlist.findOne({ user: userId });
+      if (wishlist) {
+        let productExist = wishlist.wishitems.findIndex(
+          (item) => item.productId == proId
+        );
+        if (productExist == -1) {
+          user.wishlist.updateOne({ user: userId },
+            {
+              $addToSet: {
+                wishitems: proObj
+              },
+            }
+          )
+            .then(() => {
+              resolve({ status: true });
+            });
+        }
+
+      } else {
+        const newWishlist = new user.wishlist({
+          user: userId,
+          wishitems: proObj
+        });
+
+        await newWishlist.save().then(() => {
+          resolve({ status: true });
+        });
+      }
+    });
+  },
+
+
+  ListWishList: (userId) => {
+    return new Promise(async (resolve, reject) => {
+
+
+      await user.wishlist.aggregate([
+        {
+          $match: {
+            user: ObjectId(userId)
+          }
+        },
+        {
+          $unwind: '$wishitems'
+        },
+
+
+        {
+          $project: {
+            item: '$wishitems.productId',
+          }
+        },
+
+
+        {
+          $lookup: {
+            from: 'products',
+            localField: "item",
+            foreignField: "_id",
+            as: 'wishlist'
+          }
+        },
+        {
+          $project: {
+            item: 1, wishlist: { $arrayElemAt: ['$wishlist', 0] }
+          }
+        },
+      ]).then((wishlist) => {
+        console.log(wishlist);
+        resolve(wishlist)
+      })
+    })
+  },
+
+  getWishCount: (userId) => {
+    console.log('api called');
+    return new Promise(async (resolve, reject) => {
+      let count = 0;
+      let wishlist = await user.wishlist.findOne({ user: userId })
+      if (wishlist) {
+        count = wishlist.wishitems.length
+      }
+      console.log(count+"PPPPPPPPPPPPPPPPPPPPPPPPPPPPP");
+      resolve(count)
+
+    })
+  },
+
+  // delete wish list 
+
+  deleteWishList: (body) => {
+
+    return new Promise(async (resolve, reject) => {
+
+      let product = await user.wishlist.updateOne({ _id: body.wishlistId },
+        {
+          "$pull":
+
+            { wishitems: { productId: body.productId } }
+        }).then(() => {
+          resolve({ removeProduct: true })
+        })
+
+
+    })
+  }
+  ,
+
+
+
+
+
+
+
+
+
   checkOutpage: (userId) => {
     return new Promise(async (resolve, reject) => {
 
@@ -694,6 +884,21 @@ module.exports = {
     })
 
   },
+  deleteAddress: (Id) => {
+    console.log(Id);
+    return new Promise((resolve, reject) => {
+      user.address
+        .updateOne(
+          { _id: Id.deleteId },
+          {
+            $pull: { Address: { _id: Id.addressId } },
+          }
+        )
+        .then((response) => {
+          resolve({ deleteAddress: true });
+        });
+    });
+  },
   orderPage: (userId) => {
     return new Promise(async (resolve, reject) => {
 
@@ -717,23 +922,110 @@ module.exports = {
   viewOrderDetails: (orderId) => {
     return new Promise(async (resolve, reject) => {
 
-  let productid = await user.order.findOne({ "orders._id": orderId },{'orders.$':1})
-   
-   let details=productid.orders[0]
-   let order=productid.orders[0].productDetails
- 
-   const productDetails = productid.orders.map(object => object.productDetails);
-   const address= productid.orders.map(object => object.shippingAddress);
-   const products = productDetails.map(object => object)
-     
-        resolve({products,address, details,})
-      
-    
-           
+      let productid = await user.order.findOne({ "orders._id": orderId }, { 'orders.$': 1 })
+
+      let details = productid.orders[0]
+      let order = productid.orders[0].productDetails
+
+      const productDetails = productid.orders.map(object => object.productDetails);
+      const address = productid.orders.map(object => object.shippingAddress);
+      const products = productDetails.map(object => object)
+
+      resolve({ products, address, details, })
+
+
+
     })
 
 
 
+  },
+  // invoice
+  createData:(details)=>
+  {
+    
+    let address = details.address[0]
+    let product = details.products[0][0]
+    let orderDetails = details.details
+    
+
+    var data = {
+      // Customize enables you to provide your own templates
+      // Please review the documentation for instructions and examples
+      customize: {
+        //  "template": fs.readFileSync('template.html', 'base64') // Must be base64 encoded html
+      },
+      images: {
+        // The logo on top of your invoice
+        // logo: "https://freelogocreator.com/user_design/logo",
+        // The invoice background
+        // background: "https://public.easyinvoice.cloud/img/watermark-draft.jpg",
+      },
+      // Your own data
+      sender: {
+        company: "LAPZCART",
+        address: "KOLLAM,KERALA,INDIA",
+        zip: "691030",
+        city: "KOLLAM",
+        country: "INDIA",
+       
+      },
+      // Your recipient
+      client: {
+    
+        company: address.fname,
+        address: address.street,
+        zip: address.pincode,
+        city: address.city,
+        country: "India",
+      },
+
+      information: {
+        number: address.mobile,
+        date: "12-12-2021",
+        "due-date": "31-12-2021",
+      },
+
+      products: [
+        {
+          quantity: product.quantity,
+          description: product.productsName,
+          "tax-rate": 6,
+          price: product.productsPrice,
+        },
+      ],
+      // The message you would like to display on the bottom of your invoice
+      "bottom-notice": "Thank you for your order from LAPZCART",
+      // Settings to customize your invoice
+      settings: {
+        currency: "INR", // See documentation 'Locales and Currency' for more info. Leave empty for no currency.
+        // "locale": "nl-NL", // Defaults to en-US, used for number formatting (See documentation 'Locales and Currency')
+        // "tax-notation": "gst", // Defaults to 'vat'
+        // "margin-top": 25, // Defaults to '25'
+        // "margin-right": 25, // Defaults to '25'
+        // "margin-left": 25, // Defaults to '25'
+        // "margin-bottom": 25, // Defaults to '25'
+        // "format": "A4", // Defaults to A4, options: A3, A4, A5, Legal, Letter, Tabloid
+        // "height": "1000px", // allowed units: mm, cm, in, px
+        // "width": "500px", // allowed units: mm, cm, in, px
+        // "orientation": "landscape", // portrait or landscape, defaults to portrait
+      },
+      // Translate your invoice to your preferred language
+      translate: {
+        // "invoice": "FACTUUR",  // Default to 'INVOICE'
+        // "number": "Nummer", // Defaults to 'Number'
+        // "date": "Datum", // Default to 'Date'
+        // "due-date": "Verloopdatum", // Defaults to 'Due Date'
+        // "subtotal": "Subtotaal", // Defaults to 'Subtotal'
+        // "products": "Producten", // Defaults to 'Products'
+        // "quantity": "Aantal", // Default to 'Quantity'
+        // "price": "Prijs", // Defaults to 'Price'
+        // "product-total": "Totaal", // Defaults to 'Total'
+        // "total": "Totaal" // Defaults to 'Total'
+      },
+    };
+
+    return data;
   },
   cancelOrder: (orderId, userId) => {
 
@@ -744,7 +1036,7 @@ module.exports = {
       let orders = await user.order.find({ 'orders._id': orderId })
       console.log('match---', orders);
 
-    
+
 
       let orderIndex = orders[0].orders.findIndex(orders => orders._id == orderId)
       console.log(orderIndex);
@@ -767,6 +1059,26 @@ module.exports = {
 
 
   },
+  returnOrder: (orderId) => {
+
+    return new Promise(async (resolve, reject) => {
+     
+
+      await user.order.updateOne(
+        { 'orders._id': orderId },
+        {
+          "$set": {
+            'orders.$.orderStatus': 'Returned'
+            
+          }
+        }
+      )
+        .then((orders) => {
+          console.log(orders);
+          resolve(orders);
+        });
+    });
+  },
 
   // coupon
 
@@ -786,11 +1098,11 @@ module.exports = {
               let discountAmount = (total * coupon.discountPercentage) / 100;
               if (discountAmount > coupon.maxDiscountValue) {
                 discountAmount = coupon.maxDiscountValue;
-                total=total-discountAmount
-                resolve({ status: true, discountAmount: discountAmount,total:total });
+                total = total - discountAmount
+                resolve({ status: true, discountAmount: discountAmount, total: total });
               } else {
-                total=total-discountAmount
-                resolve({ status: true, discountAmount: discountAmount ,total:total});
+                total = total - discountAmount
+                resolve({ status: true, discountAmount: discountAmount, total: total });
               }
             } else {
               console.log("ded1");
@@ -905,7 +1217,42 @@ module.exports = {
 
   // },
 
+// search
+productSearch: (searchData) => {
+  let keyword=searchData.search
+  console.log(keyword);
+  return new Promise(async (resolve, reject) => {
+    try {
+      const products = await user.product.find( { Productname: { $regex:new RegExp(keyword,'i')}});
 
+      if (products.length > 0) {
+      console.log(products);
+        resolve(products);
+      } else {
+        reject('No products found.');
+      }
+    } catch (err) {
+      console.log(err);
+      reject(err);
+    }
+  });
+},
+postSort: (sortOption) => {
+  return new Promise(async (resolve, reject) => {
+    let products;
+    if (sortOption === 'price-low-to-high') {
+
+      products = await user.product.find().sort({ Price: 1 }).exec();
+    } else if (sortOption === 'price-high-to-low') {
+
+      products = await user.product.find().sort({ Price: -1 }).exec();
+    } else {
+      products = await user.product.find().exec();
+    }
+    resolve(products)
+  })
+
+},
 
 
 

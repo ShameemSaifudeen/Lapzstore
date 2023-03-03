@@ -308,6 +308,257 @@ module.exports = {
 
   },
 
+
+  // dashboard
+
+  getOrderByDate: () => {
+    return new Promise(async (resolve, reject) => {
+      const startDate = new Date('2022-01-01');
+      await user.order.find({ createdAt: { $gte: startDate } }).then((response) => {
+        console.log(response);
+        console.log("===============orderby date===================");
+        resolve(response)
+
+      })
+    });
+  },
+
+  // get all orders 
+
+  getAllOrders: () => {
+    return new Promise(async (resolve, reject) => {
+      let order = await user.order.aggregate([
+        { $unwind: '$orders' },
+
+      ]).then((response) => {
+        resolve(response)
+      })
+
+    })
+  },
+  getCodCount: () => {
+    return new Promise(async (resolve, reject) => {
+      let response = await user.order.aggregate([
+        {
+          $unwind: "$orders"
+        },
+        {
+          $match: {
+            "orders.paymentmode": "COD"
+          }
+        },
+      ])
+      resolve(response)
+    })
+  },
+
+
+  getOnlineCount: () => {
+    return new Promise(async (resolve, reject) => {
+      let response = await user.order.aggregate([
+        {
+          $unwind: "$orders"
+        },
+        {
+          $match: {
+            "orders.paymentmode": "online"
+          }
+        },
+      ])
+      resolve(response)
+    })
+  },
+
+  totalUserCount: () => {
+
+    return new Promise(async (resolve, reject) => {
+      let response = await user.user.find().exec()
+
+      resolve(response)
+
+    })
+  },
+  getSalesReport: async () => {
+    return new Promise(async (resolve, reject) => {
+      let response = await user.order.aggregate([
+        {
+          $unwind: "$orders"
+        },
+        {
+          $match: {
+            "orders.orderStatus": "Delivered"
+          }
+        },
+      ])
+
+      resolve(response)
+    })
+  },
+  postReport: (date) => {
+    let start = new Date(date.startdate);
+    let end = new Date(date.enddate);
+
+    return new Promise(async (resolve, reject) => {
+      await user.order.aggregate([
+        {
+          $unwind: "$orders",
+        },
+        {
+          $match: {
+            $and: [
+              { "orders.orderStatus": "Delivered" },
+              { "orders.createdAt": { $gte: start, $lte: end } }
+
+            ]
+          }
+        }
+      ])
+        .exec()
+        .then((response) => {
+          console.log(response);
+          resolve(response)
+        })
+    })
+
+  },
+  gettotalamount: () => {
+    return new Promise(async (resolve, reject) => {
+
+
+      await user.order.aggregate([
+
+        {
+          $unwind: '$orders'
+        },
+        {
+          $match: {
+            "orders.orderStatus": "Delivered"
+          }
+        },
+        {
+          $project: {
+            productDetails: '$orders.productDetails',
+
+          }
+
+        },
+        {
+          $unwind: '$productDetails'
+        },
+
+        {
+          $project: {
+            price: '$productDetails.productsPrice',
+            quantity: '$productDetails.quantity'
+          }
+        },
+
+
+        // {
+        //   $lookup: {
+        //     from: 'products',
+        //     localField: "item",
+        //     foreignField: "_id",
+        //     as: 'carted'
+        //   }
+        // },
+        // {
+        //   $project: {
+        //     item: 1, quantity: 1, product: { $arrayElemAt: ['$carted', 0] }
+        //   }
+
+        // },
+        {
+          $group: {
+            _id: null,
+            total: { $sum: { $multiply: ["$price", "$quantity"] } }
+          }
+        }
+      ]).then((total) => {
+
+
+        resolve(total[0].total)
+        console.log(total[0].total, '------------------------------');
+
+
+      })
+
+    })
+
+  },
+  getTotalAmount: (date) => {
+    let start = new Date(date.startdate);
+    let end = new Date(date.enddate);
+    return new Promise(async (resolve, reject) => {
+
+
+      await user.order.aggregate([
+
+        {
+          $unwind: '$orders'
+        },
+        {
+          $match: {
+            $and: [
+              { "orders.orderStatus": "Delivered" },
+              { "orders.createdAt": { $gte: start, $lte: end } }
+
+            ]
+          }
+        },
+        {
+          $project: {
+            productDetails: '$orders.productDetails',
+
+          }
+
+        },
+        {
+          $unwind: '$productDetails'
+        },
+
+        {
+          $project: {
+            price: '$productDetails.productsPrice',
+            quantity: '$productDetails.quantity'
+          }
+        },
+
+
+        // {
+        //   $lookup: {
+        //     from: 'products',
+        //     localField: "item",
+        //     foreignField: "_id",
+        //     as: 'carted'
+        //   }
+        // },
+        // {
+        //   $project: {
+        //     item: 1, quantity: 1, product: { $arrayElemAt: ['$carted', 0] }
+        //   }
+
+        // },
+        {
+          $group: {
+            _id: 0,
+            total: { $sum: { $multiply: ["$price", "$quantity"] } }
+          }
+        }
+      ]).then((total) => {
+
+
+        resolve(total[0].total)
+        // console.log(total[0].total[0], '------------------------------');
+
+
+      })
+
+    })
+
+  }
 }
+
+
 
 

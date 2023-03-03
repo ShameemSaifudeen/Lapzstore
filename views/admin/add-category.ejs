@@ -16,7 +16,9 @@
           
         >
           <label for="">Category Name</label>
-          <input type="text" name="categoryname" class="form-control" />
+          <input type="text" name="categoryname" id="name" class="form-control" onkeyup="validateName()"/>
+          <span id="name-error" class="validation-label"></span>
+<br>
           <button type="submit" class="btn btn-success mt-4">Submit</button>
         </form>
       </div>
@@ -66,4 +68,34 @@
 setTimeout(function() {
   document.getElementById('message').style.display = 'none';
 }, 3000);
+</script>
+<script>
+  let nameError = document.getElementById("name-error");
+// let discritionError = document.getElementById("discription-error");
+
+const regex = /^[^ ].*/
+function validateName() {
+  console.log("lllll");
+  var name = document.getElementById("name").value;
+  var nameInput = document.getElementById("name");
+console.log(name);
+  if (name.length == 0) {
+    nameError.innerHTML = "Name is required";
+    nameError.style.color = "red";
+    nameInput.style.border = "solid 2px red";
+    return false;
+  } if (!name.match(regex)) {
+    nameError.innerHTML = "Write valid name";
+    nameError.style.color = "red";
+    nameInput.style.border = "solid 2px red";
+
+    return false;
+  }
+  nameError.innerHTML = "";
+  // nameError.innerHTML = "Valid Name";
+  nameError.style.color = "green";
+  nameInput.style.border = "solid 2px green";
+
+  return true;
+}
 </script>

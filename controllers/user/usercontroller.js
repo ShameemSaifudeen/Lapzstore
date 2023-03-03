@@ -1,8 +1,8 @@
-const userhelpers = require('../helpers/userhelpers')
-const user = require('../models/connection')
-const otp = require('../thirdparty/otp')
+const userhelpers = require('../../helpers/userhelpers')
+const user = require('../../models/connection')
+const otp = require('../../thirdparty/otp')
 const ObjectId = require('mongodb').ObjectId
-const adminHelper = require('../helpers/adminHelpers')
+const adminHelper = require('../../helpers/adminHelpers')
 const { log } = require('console')
 
 
@@ -10,6 +10,7 @@ const client = require('twilio')(otp.accountId, otp.authToken)
 
 let userSession, number, loggedUser, loggedUserId, homeList;
 let count, numberStatus, otpStatus, total
+let wishCount
 
 
 module.exports = {
@@ -18,8 +19,10 @@ module.exports = {
     userSession = req.session.userLoggedIn
     if (req.session.userLoggedIn) {
       count = await userhelpers.getCartItemsCount(req.session.user.id)
+      wishCount = await userhelpers.getWishCount(req.session.user.id)
       homeList = await userhelpers.shopListProduct()
-      res.render('user/user', { userSession, count, homeList })
+      console.log(wishCount + "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^66");
+      res.render('user/user', { userSession, count, homeList, wishCount })
     }
     else {
       homeList = await userhelpers.shopListProduct()
@@ -32,8 +35,44 @@ module.exports = {
 
     userSession = req.session.userLoggedIn
 
-    res.render("user/user", { userSession, count, homeList });
+    res.render("user/user", { userSession, count, homeList, wishCount });
   },
+
+  // User Profile
+
+  getProfile: async (req, res) => {
+    let data = await userhelpers.findUser(req.session.user.id)
+    res.render('user/profile', { userSession, data })
+
+  },
+
+  updateProfile: (req, res) => {
+    userhelpers.updateProfile(req.body, req.query.userId).then((data)=>{
+      res.json({data})
+    })
+  },
+  resetPassword:(req,res)=>{
+    let user=req.session.user.id
+    console.log(user);
+    res.render('user/reset-password',{userSession,user})
+  },
+  updatePassword: async (req, res) => {
+    console.log(req.query.proId);
+    let passResponse = await userhelpers.verifyPassword(
+      req.body,
+      req.query.proId
+    );
+    if (passResponse) {
+      res.json(true);
+    }
+    else{
+      res.json(false);
+
+    }
+  },
+
+
+
   getUserOtpLogin: (req, res) => {
 
     numberStatus = true
@@ -170,12 +209,12 @@ module.exports = {
     documentCount = await userhelpers.documentCount()
     console.log(documentCount + "ppppppppppppp");
     let pages = Math.ceil(parseInt(documentCount) / perPage)
-    console.log(pages + "!!!!!!!!!!!");
+    // console.log(pages + "!!!!!!!!!!!");
 
     userhelpers.shopListProduct(pageNum).then((response) => {
       console.log(response);
 
-      res.render('user/shop', { response, userSession, count, viewCategory, currentPage, documentCount, pages })
+      res.render('user/shop', { response, userSession, count, viewCategory, currentPage, documentCount, pages, wishCount })
     })
 
 
@@ -185,7 +224,7 @@ module.exports = {
 
     userhelpers.category(req.query.cname).then((response) => {
 
-      res.render('user/filter-by-category', { response, userSession, viewCategory, count })
+      res.render('user/filter-by-category', { response, userSession, viewCategory, count, wishCount })
     })
   },
 
@@ -196,7 +235,7 @@ module.exports = {
     console.log(req.params.id);
     userhelpers.productDetails(req.params.id).then((data) => {
       console.log(data);
-      res.render('user/eachproduct', { userSession, data, count })
+      res.render('user/eachproduct', { userSession, data, count, wishCount })
     })
   },
 
@@ -222,7 +261,7 @@ module.exports = {
     let cartItems = await userhelpers.viewCart(req.session.user.id)
     // console.log(cartItems);
 
-    res.render('user/view-cart', { cartItems, userId, userSession, count, total })
+    res.render('user/view-cart', { cartItems, userId, userSession, count, total, wishCount })
 
   },
   postchangeProductQuantity: async (req, res) => {
@@ -249,6 +288,34 @@ module.exports = {
     })
   }
   ,
+  wishList: (req, res) => {
+    console.log(req.session.user.id);
+
+    userhelpers.AddToWishList(req.query.wishid, req.session.user.id).then((response) => {
+      res.json(response.status)
+
+    })
+
+  },
+
+  ListWishList: async (req, res) => {
+    wishCount = await userhelpers.getWishCount(req.session.user.id)
+    console.log(wishCount + "__________________________________");
+    await userhelpers.ListWishList(req.session.user.id).then((wishlistItems) => {
+
+      res.render('user/wishlist', { wishlistItems, wishCount, count, userSession })
+
+    })
+  },
+
+  deleteWishList: (req, res) => {
+    userhelpers.deleteWishList(req.body).then((response) => {
+
+      res.json(response)
+
+    })
+  },
+
   checkOutPage: async (req, res) => {
 
     let users = req.session.user.id
@@ -261,12 +328,12 @@ module.exports = {
     if (req.session.user.total) {
       total = req.session.user.total
     }
-    
+
     else {
 
       total = await userhelpers.totalCheckOutAmount(req.session.user.id)
     }
-    
+
     userhelpers.checkOutpage(req.session.user.id).then((response) => {
 
 
@@ -284,7 +351,7 @@ module.exports = {
 
       total = await userhelpers.totalCheckOutAmount(req.session.user.id)
     }
-    req.session.user.total=null
+    req.session.user.total = null
     let order = await userhelpers.placeOrder(req.body, total).then((response) => {
 
 
@@ -358,14 +425,15 @@ module.exports = {
         } ${date.getHours(hours)}:${date.getMinutes(minutes)}:${date.getSeconds(seconds)}`;
     };
 
-    userhelpers.viewOrderDetails(details).then((response) => {
+    await userhelpers.viewOrderDetails(details).then((response) => {
       console.log(response.products);
       let products = response.products[0]
       console.log(products);
       let address = response.address
       let orderDetails = response.details
+      let data = userhelpers.createData(response)
 
-      res.render('user/order-details', { products, address, orderDetails, userSession, count, getDate })
+      res.render('user/order-details', { products, address, orderDetails, userSession, count, getDate, data })
 
     })
 
@@ -383,7 +451,27 @@ module.exports = {
     })
 
   },
+  putReturnOrder: (req, res) => {
+    let user = req.session.user.id;
+    let users = req.session.user;
+    userhelpers.returnOrder(req.query.orderId).then((response) => {
+      res.json(response);
+    });
+  },
 
+  // for profile
+  getAddress: async (req, res) => {
+
+    let response = await userhelpers.checkOutpage(req.session.user.id)
+
+    res.render('user/address', { response, userSession })
+  },
+  deleteAddress: (req, res) => {
+    userhelpers.deleteAddress(req.body).then((response) => {
+      console.log(response);
+      res.json(response);
+    });
+  },
 
 
   getAddresspage: async (req, res) => {
@@ -433,6 +521,38 @@ module.exports = {
 
       res.json(response);
     });
+  },
+  // search
+
+  getSearch: async(req, res) => {
+
+    viewCategory = await adminHelper.viewAddCategory()
+    // console.log(req.query.page);
+    // let pageNum = req.query.page
+    // let perPage = 6
+ 
+    // documentCount = await userproductHelpers.productCount()
+
+
+    // let pages = Math.ceil((documentCount) / perPage)
+
+    userhelpers.productSearch(req.body).then((response)=>{
+
+          res.render('user/filter-by-category',{response, userSession, viewCategory, count, wishCount})
+          console.log(response);
+         }).catch((err)=>{
+          res.render('user/filter-by-category',{err, userSession, viewCategory, count, wishCount})
+
+    console.log(err)
+         })
+  },
+  postSort:async (req, res) => {
+    console.log(req.body);
+    let sortOption = req.body['selectedValue'];
+    viewCategory = await adminHelper.viewAddCategory()
+    userhelpers.postSort(sortOption).then((response) => {
+    res.render('user/filter-by-category',{response, userSession, viewCategory, count, wishCount})
+    })
   },
 
 

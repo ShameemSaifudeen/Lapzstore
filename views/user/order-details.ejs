@@ -9,6 +9,14 @@
               
               <h5 class="text-muted mb-0">Thanks for your Order, <span style="color: black;"><%=orderDetails.name%></span>!</h5>
             </div>
+            <p style="display: none;" id="invoicedata;"><%= JSON.stringify(locals.data) %></p>
+  
+                <%if(orderDetails. orderStatus=='Delivered'){%>
+
+            
+                  <button class="btn btn-suucess" onclick="invoiceCreator()">Download invoice</button>
+    
+                <%}%>
             <div class="card-body p-4">
               <div class="d-flex justify-content-between align-items-center mb-4">
                 <p class="lead fw-normal mb-0" style="color: black;">Order Details </p>
@@ -69,10 +77,10 @@
                                                                               
                                                                               <%} %>
                                                                                 <%if(orderDetails. orderStatus=='success'){ %>   
-          <buttton  class="btn btn-primary text-center" style="background: red; height:3rem" onclick="cancelorder('<%=orderDetails._id%>')">Cancell</buttton>
+          <button  class="btn btn-primary text-center" style="background: red; height:3rem" onclick="cancelorder('<%=orderDetails._id%>')">Cancell</button>
                                                                                   <%} %>
                                                                                   <%if(orderDetails. orderStatus=='Delivered'){ %>   
-                                                                    <buttton         class="btn btn-primary text-center" style="background: orange; height:3rem" >Return</buttton>
+                                                                    <button onclick="returnOrder('<%=orderDetails._id%>')"  class="btn btn-primary text-center" style="background: orange; height:3rem" >Return</button>
                                                                                     <%} %>
 
 
@@ -142,6 +150,36 @@
    })
 
     }
+    function returnOrder(orderid){
+      console.log(orderid);
+
+   $.ajax({  
+
+     url:'/return_order?orderId='+orderid,
+     method:'put',
+     success:(response)=>{
+      if(response){
+        location.reload()
+      }
+
+     }
+   })
+
+    }
+    function invoiceCreator() {
+    //Import the library into your project
+    let data = JSON.parse(document.getElementById('invoicedata').innerHTML);
+    console.log(data);
+
+     
+
+    //Create your invoice! Easy!
+    easyinvoice.createInvoice(data, function (result) {
+      //The response will contain a base64 encoded PDF file
+      console.log("PDF base64 string: ", result.pdf);
+      easyinvoice.download("invoice.pdf");
+    });
+  }
 
 
 

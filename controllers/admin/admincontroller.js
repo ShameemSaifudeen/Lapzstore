@@ -113,8 +113,8 @@ module.exports = {
 
 
     await adminHelper.getAllOrders().then((response) => {
-
-      var length = response.length
+// ch
+      let length = response.length
 
       let total = 0;
 
@@ -171,8 +171,8 @@ module.exports = {
   postCategory: (req, res) => {
     console.log(req.body.categoryname);
     adminHelper.addCategory(req.body).then((data) => {
-
-      var categoryStatus = data.categoryStatus
+// var
+      let categoryStatus = data.categoryStatus
       if (categoryStatus == false) {
 
         res.redirect('/admin/add_category');
@@ -440,7 +440,58 @@ module.exports = {
     })
 
 
-  }
+  },
+  getAddBanner: (req, res) => {
+
+    res.render('admin/add-banner', { layout: 'adminLayout',adminStatus })
+  },
+  postAddBanner: (req, res) => {
+
+    adminHelper.addBanner(req.body, req?.file?.filename).then((response) => {
+
+      res.redirect('/admin/add_banner')
+
+    })
+  },
+
+  //edit banner
+
+  listBanner: (req, res) => {
+
+    adminHelper.listBanner().then((response) => {
+
+      admins = req.session.admin
+
+      res.render('admin/list-banner', { layout: 'adminLayout', response, adminStatus })
+
+    })
+
+  },
+
+  //edit banner
+
+
+  getEditBanner: (req, res) => {
+
+    adminHelper.editBanner(req.query.banner).then((response) => {
+
+      res.render('admin/edit-banner', { layout: 'adminLayout', response, adminStatus })
+
+    })
+
+  },
+
+  // post edit banner 
+
+
+  postEditBanner: (req, res) => {
+
+    console.log(req.file.filename);
+    adminHelper.postEditBanner(req.query.editbanner, req?.body, req?.file?.filename).then((response) => {
+      res.redirect('/admin/list_banner')
+
+    })
+  },
 
 }
 

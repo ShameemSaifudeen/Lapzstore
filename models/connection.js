@@ -184,7 +184,36 @@ const wishSchema = new mongoose.Schema({
     default: Date.now
   }
 });
-
+const bannerSchema = new mongoose.Schema({
+  title: {
+    type: String,
+    required: true
+  },
+  image: {
+    type: String,
+    required: true
+  },
+  description: {
+    type: String,
+    required: true
+  },
+  link: {
+    type: String,
+    required: true
+  },
+  created_at: {
+    type: Date,
+    default: Date.now
+  },
+  updated_at: {
+    type: Date,
+    default: Date.now
+  },
+  // positi: {
+  //   type: String,
+  //   required: true
+  // },
+});
 //  module.exports=db
 
 
@@ -197,8 +226,8 @@ module.exports = {
   order: mongoose.model('order', orderSchema),
   address: mongoose.model('address', addressSchema),
   coupon: mongoose.model("coupon", couponSchema),
-  wishlist: mongoose.model("wishlist", wishSchema)
-
+  wishlist: mongoose.model("wishlist", wishSchema),
+  banner: mongoose.model("banner",bannerSchema)
 
 }
 

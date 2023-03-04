@@ -11,16 +11,16 @@
           enctype="multipart/form-data"
         >
           <label for="">Prodcut Name</label>
-          <input type="text" name="name" id="name" class="form-control" onkeyup="validateName()"  />
+          <input type="text" name="name" id="name" required="" class="form-control" onkeyup="validateName()"  />
           <span id="name-error" class="validation-label"></span>
 <br>
           <label for="">Description</label>
-          <input type="text" name="description" id="discription" class="form-control" onkeyup="validateDiscription()"/>
+          <input type="text" name="description"required="" id="discription" class="form-control" onkeyup="validateDiscription()"/>
           <span id="discription-error" class="validation-label"></span>
 <br>
 
           <label for="">Price</label>
-          <input type="text" name="price" class="form-control" />
+          <input type="text" name="price"required="" class="form-control" />
 
           <label for="">Category</label>
           
@@ -43,10 +43,10 @@
           </select>
           
           <label for="">Quantity</label>
-          <input type="text" name="quantity" value="1" class="form-control" />
+          <input type="text" name="quantity"required="" value="1" class="form-control" />
 
           <label for="">Image</label>
-          <input type="file" name="file"  class="form-control" multiple accept="file/*"/>
+          <input type="file" name="file" required="" class="form-control" multiple accept="file/*"/>
 
           <button type="submit" class="btn btn-success mt-4">Submit</button>
         </form>

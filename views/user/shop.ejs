@@ -74,6 +74,7 @@
                 "
                       ><i class="fi-rs-search"></i
                     ></a>
+
                     <a
                       aria-label="Add To Wishlist"
                       class="action-btn hover-up"
@@ -188,6 +189,8 @@
 
 <script>
   function addtocart(proId) {
+    console.log(proId);
+
     $.ajax({
       url: "/add_to_cart/" + proId,
       method: "get",

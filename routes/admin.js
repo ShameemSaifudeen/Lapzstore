@@ -68,6 +68,15 @@ router.get('/sales_report', middleware.adminSession,adminController.getSalesRepo
 
 router.post('/sales_report', adminController.postSalesReport)
 
+router.get("/add_banner", middleware.adminSession,adminController.getAddBanner)
+
+router.post("/add_banner",multer.addBannerupload, middleware.adminSession,adminController.postAddBanner)
+
+router.get("/list_banner", middleware.adminSession,adminController.listBanner)
+
+router.get("/edit_banner", middleware.adminSession,adminController.getEditBanner)
+
+router.post("/edit_banner",multer.editBannerupload, middleware.adminSession,adminController.postEditBanner)
 
 module.exports = router;
 

@@ -34,7 +34,8 @@ module.exports = {
 
         }
         else {
-          var hashedPassword = await bcrypt.hash(userData.password, 10);
+          // ch
+          let hashedPassword = await bcrypt.hash(userData.password, 10);
           const data = new user.user({
 
             username: userData.username,
@@ -176,7 +177,7 @@ module.exports = {
 
 
       await user.product.find().skip((pageNum - 1) * perPage).limit(perPage).then((response) => {
-        console.log(response);
+        // console.log(response);
 
         resolve(response)
       })
@@ -326,7 +327,7 @@ module.exports = {
     return new Promise(async (resolve, reject) => {
       let count = 0;
       let cart = await user.cart.findOne({ user: userId })
-      console.log(cart);
+      // console.log(cart);
       if (cart) {
         count = cart.cartItems.length
       }
@@ -910,7 +911,7 @@ module.exports = {
         $unwind: '$orders'
       },
       {
-        $sort: { 'orders:createdAt': -1 }
+        $sort: { 'orders.createdAt': -1 }
       }
       ]).then((response) => {
         console.log(response);

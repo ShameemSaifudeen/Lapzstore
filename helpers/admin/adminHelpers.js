@@ -3,12 +3,21 @@ const db = require("../../models/connection");
 const voucher_codes = require("voucher-code-generator");
 
 module.exports = {
-  getUsers: () => {
+  documentCount: () => {
+    return new Promise(async (resolve, reject) => {
+      await db.product.find().countDocuments().then((documents) => {
+
+        resolve(documents);
+      })
+    })
+  },
+  getUsers: (pageNum) => {
+    const perPage = 10
     return new Promise(async (resolve, reject) => {
       let userDatas = [];
       await db.user
         .find()
-        .exec()
+        .skip((pageNum - 1) * perPage).limit(perPage)
         .then((result) => {
           userDatas = result;
         });

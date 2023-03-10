@@ -45,21 +45,19 @@ router.get('/add_to_cart/:id', middleware.userSession, middleware.isUserBlock,co
 
 router.get('/view_cart', middleware.userSession,middleware.isUserBlock, controllers.getViewCart)
 
+router.post('/view_cart', middleware.userSession,middleware.isUserBlock, controllers.postCart)
+
+router.post('/validate_coupon', middleware.userSession,middleware.isUserBlock, controllers.validateCoupon)
+
 router.put('/change_product_quantity', middleware.userSession, controllers.postchangeProductQuantity)
 
 router.delete('/delete_cart_item', middleware.userSession,middleware.isUserBlock, controllers.getDeleteCart)
-
 
 router.get('/add_to_wishlist',middleware.userSession,middleware.isUserBlock,controllers.wishList)
 
 router.get('/wishlist',middleware.userSession,middleware.isUserBlock,controllers.ListWishList)
 
 router.delete('/delete_wishlist',middleware.userSession,controllers.deleteWishList)
-
-
-
-
-
 
 router.get("/check_out", middleware.userSession,middleware.isUserBlock, controllers.checkOutPage)
 
@@ -81,11 +79,9 @@ router.get("/add_address", middleware.userSession,middleware.isUserBlock, contro
 
 router.post('/add_address', middleware.userSession, controllers.postAddresspage)
 
-router.post("/apply_coupon", middleware.userSession, controllers.applyCoupon);
+// router.get("/coupon_validator",middleware.userSession, controllers.couponValidator);
 
-router.get("/coupon_validator",middleware.userSession, controllers.couponValidator);
-
-router.get("/coupon_verify", middleware.userSession, controllers.couponVerify);
+// router.get("/coupon_verify", middleware.userSession, controllers.couponVerify);
 
 router.get('/category', middleware.userSession,middleware.isUserBlock, controllers.category)
 

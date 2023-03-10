@@ -56,15 +56,11 @@ module.exports = {
         {
           $unwind: '$wishitems'
         },
-
-
         {
           $project: {
             item: '$wishitems.productId',
           }
         },
-
-
         {
           $lookup: {
             from: 'products',

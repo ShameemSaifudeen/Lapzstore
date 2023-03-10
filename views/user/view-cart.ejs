@@ -86,10 +86,14 @@
                                                         </div>
                                                         <div class="form-group col-lg-3">
 
-
+                                                          <button type="button" class="btn  btn-sm"
+                                                          onclick="validatecoupon()"><i
+                                                              class="fi-rs-label mr-10"></i>Apply</button>
                               
-                              <button class="btn  btn-sm" type="button" onclick="couponValidator(this,'<%=total%>')"><i class="fi-rs-label mr-10"></i>Apply</button>
+                              
                                                         </div>
+                                                        <h6 id="successMesage"></h6>
+                                                        <h6 id="couponUsedErr" class="message" style="color: red;"></h6>
                                                     </div>
                                                 </form>
                                                 <span class="couponErr"></span>
@@ -115,13 +119,29 @@
                                                     <td class="cartItems_total_amount"> <i class="ti-gift mr-5"></i> Free Shipping</td>
                                                 </tr>
                                                 <tr>
+                                                  <td class="cartItems_total_label">Discount Amount</td>
+                                                  <td class="cartItems_total_amount" id="discountAmount"> <i class="ti-gift mr-5"></i> ₹0</td>
+                                              </tr>
+                                                <tr>
                                                     <td class="cartItems_total_label">Total</td>
                                                     <td class="cartItems_total_amount"><strong>₹<span id="total" class="font-xl fw-900 text-brand "><%= total%></span></strong></td>
                                                 </tr>
                                             </tbody>
                                         </table>
+                                        <form class="form-sample" action="/view_cart" method="POST">
+                                          <input type="hidden" name="total" id="checkTotal" value="">
+                                          <input type="hidden" name="couponName" id="couponName" value="">
+                                          <input type="hidden" name="discountAmount" id="couponDiscountAmount" value="">
+                                          <% if(locals.cartItems[0].cartItems.Quantity>0){%>
+                                          <button type="submit" class="btn "><i class="fi-rs-box-alt mr-10"></i>Proceed To
+                                              CheckOut</button>
+                                              <%} else{%>
+                                                    <p class="text-danger"> This Product Is  Currently Out Of Stock</p>
+      
+                                                  <%} %>
+                                      </form>
                                     </div>
-                                    <a href="/check_out" class="btn "> <i class="fi-rs-box-alt mr-10"></i> Proceed To CheckOut</a>
+                                    <!-- <a href="/check_out" class="btn "> <i class="fi-rs-box-alt mr-10"></i> Proceed To CheckOut</a> -->
                                 </div>
                             </div>
                         </div>
@@ -217,76 +237,32 @@ function removeItem(cartId, prodId) {
 })
    
 }
-function couponValidator(elem, total) {
-    code = document.getElementById("code").value.trim();
-    console.log(code);
-    // couponTotal = document.getElementById("total").value;
-    $.ajax({
-      url: "/coupon_validator?code=" + code,
-      method: "get",
-      success: (response) => {
-        console.log(response + "coupon validated");
-
-        console.log(response);
-        if (response.status == true) {
-          $.ajax({
-            url: "/coupon_verify?code=" + code,
-            method: "get",
-            success: (response) => {
-              console.log(response + "coupon verified");
-              if (response.status == true) {
+function validatecoupon() {
+                couponname = document.getElementById('code').value
                 $.ajax({
-                  url: "/apply_coupon?code=" + code,
-                  method: "post",
-                  data:{
-                    total:total
-                  },
-                  success: (response) => {
-                    console.log(response.discountAmount + "i am discount");
-                    console.log(response.status + "i am status");
-
-                    if (response.status == true) {
-                      console.log("success3", response);
-                      document.querySelector(".couponErr").style.color =
-                        "#19ff11";
-                      document.querySelector(".couponErr").innerHTML =
-                        "Coupon Applied Succesfully";
-                      document.getElementById("total").innerHTML =
-                        total - response.discountAmount;
-                      // couponTotal.innerHTML = `₹ ${
-                      //   total - response.discountAmount
-                    } else {
-                      console.log("failed", response);
-                      document.querySelector(".couponErr").style.color =
-                        "#ff0707";
-                      document.querySelector(".couponErr").innerHTML =
-                        response.reason;
+                    url: '/validate_coupon?couponName=' + couponname,
+                    method: "POST",
+                    success: (response) => {
+                      console.log(response);
+                        if (response.discountAmount && response.couponTotal) {
+                            document.getElementById('discountAmount').innerHTML = "-" + (response?.discountAmount)
+                            document.getElementById('total').innerHTML = response?.couponTotal
+                            document.getElementById('successMesage').innerHTML = response?.success
+                        }
+                        const checkTotalInput = document.getElementById('checkTotal');
+                        const couponNameInput = document.getElementById('couponName');
+                        const couponDiscountInput = document.getElementById('couponDiscountAmount')
+                        checkTotalInput.value = response?.couponTotal
+                        couponNameInput.value = couponname;
+                        couponDiscountInput.value = response?.discountAmount;
+                        console.log(couponDiscountInput);
+                        if (response.err) {
+                            document.getElementById('couponUsedErr').innerHTML = response.err
+                        }
+                    
+                            
                     }
-                  },
-                });
-              } else {
-                document.querySelector(".couponErr").style.color = "#ff0707";
-                console.log("failed", response.reason);
-                document.querySelector(".couponErr").innerHTML =
-                  response.reason;
-
-                setTimeout(function () {
-                  document.querySelector(".couponErr").style.display = "none";
-                }, 3000);
-              }
-            },
-          });
-        } else {
-          document.querySelector(".couponErr").style.color = "#ff0707";
-          document.querySelector(".couponErr").innerHTML = response.reason;
-          console.log("failed", response.reason);
-
-          setTimeout(function () {
-            document.querySelector(".couponErr").style.display = "none";
-          }, 3000);
-        }
-      },
-    });
-  }
+                })
+            }
 
 </script>

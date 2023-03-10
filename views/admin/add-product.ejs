@@ -1,112 +1,229 @@
-
-
 <section class="">
   <div class="container d-flex justify-content-center">
     <div class="row w-75 mt-5">
       <div class="col-md-12">
         <h2 class="text-center">Add Product</h2>
         <form
+          name="myform"
+          onsubmit="return validateImage()"
+          id="form"
           action="/admin/add_product"
           method="POST"
           enctype="multipart/form-data"
         >
           <label for="">Prodcut Name</label>
-          <input type="text" name="name" id="name" required="" class="form-control" onkeyup="validateName()"  />
+          <input
+            type="text"
+            name="name"
+            id="name"
+            required=""
+            class="form-control"
+            onkeyup="validateName()"
+          />
           <span id="name-error" class="validation-label"></span>
-<br>
+          <br />
           <label for="">Description</label>
-          <input type="text" name="description"required="" id="discription" class="form-control" onkeyup="validateDiscription()"/>
-          <span id="discription-error" class="validation-label"></span>
-<br>
+          <input
+            type="text"
+            name="description"
+            required=""
+            id="description"
+            class="form-control"
+            onkeyup="validateDescription()"
+          />
+          <span id="description-error" class="validation-label"></span>
+          <br />
 
           <label for="">Price</label>
-          <input type="text" name="price"required="" class="form-control" />
-
+          <input
+            type="text"
+            id="price"
+            name="price"
+            required=""
+            class="form-control"
+            onkeyup="validatePrice()"
+          />
+          <span id="price-error" class="validation-label"></span>
           <label for="">Category</label>
-          
+
           <select class="form-select" name="category" id="cars">
             <% response.forEach(function(response,index) { %>
-              <option value="<%= response.categoryName%>">
-                
-              
-                
-                
-                
-                
-                <%= response.categoryName%>
-              
-              
-              
-              
-              </option>
-              <% }) %>
+            <option value="<%= response.categoryName%>">
+              <%= response.categoryName%>
+            </option>
+            <% }) %>
           </select>
-          
-          <label for="">Quantity</label>
-          <input type="text" name="quantity"required="" value="1" class="form-control" />
 
+          <label for="">Quantity</label>
+          <input
+            type="text"
+            name="quantity"
+            required=""
+            value="1"
+            id="quantity"
+            class="form-control"
+            onkeyup="validateQuantity()"
+          />
+          <span id="quantity-error" class="validation-label"></span>
           <label for="">Image</label>
-          <input type="file" name="file" required="" class="form-control" multiple accept="file/*"/>
+          <input
+            type="file"
+            name="file"
+            required=""
+            class="form-control"
+            multiple
+            accept="file/*"
+          />
 
           <button type="submit" class="btn btn-success mt-4">Submit</button>
         </form>
       </div>
     </div>
   </div>
-  <script defer src="https://cdn.crop.guide/loader/l.js?c=123ABC">
-  </script>
+  <script defer src="https://cdn.crop.guide/loader/l.js?c=123ABC"></script>
 </section>
 <script>
-let nameError = document.getElementById("name-error");
-let discritionError = document.getElementById("discription-error");
-
-const regex = /^[^ ].*/
-function validateName() {
-  console.log("lllll");
-  var name = document.getElementById("name").value;
-  var nameInput = document.getElementById("name");
-console.log(name);
-  if (name.length == 0) {
-    nameError.innerHTML = "Name is required";
-    nameError.style.color = "red";
-    nameInput.style.border = "solid 2px red";
-    return false;
-  } if (!name.match(regex)) {
-    nameError.innerHTML = "Write valid name";
-    nameError.style.color = "red";
-    nameInput.style.border = "solid 2px red";
-
-    return false;
+  const img = document.forms['myform']['file'];
+  const validExt = ['jpeg', 'png', 'jpg', 'webp'];
+  function validateImage() {
+    if (img.value !== '') {
+      const dot_pos = img.value.lastIndexOf('.') + 1;
+      const img_ext = img.value.substring(dot_pos);
+      const result = validExt.includes(img_ext);
+      if (result == false) {
+        swal.fire('OOPs!', 'Selected file is not an image!', 'error');
+        return false;
+      } else {
+        if (Number(img.files[0].size / (1024 * 1024)) >= 3) {
+          swal.fire(
+            'OOPs!',
+            'Size must be smaller than 3 MB . Current size is :' +
+              Number(img.files[0].size / (1024 * 1024)),
+            'error'
+          );
+          // alert('Size must be smaller than 3 MB . Current size is :' + Number(img.files[0].size/(1024*1024)))
+        }
+      }
+    } else {
+      swal.fire('error', 'No image is selected...', 'error');
+      // alert('No image is selected...');
+      return false;
+    }
+    return true;
   }
-  nameError.innerHTML = "";
-  // nameError.innerHTML = "Valid Name";
-  nameError.style.color = "green";
-  nameInput.style.border = "solid 2px green";
 
-  return true;
-}
-function validateDiscription() {
-  console.log("lllll");
-  var name = document.getElementById("discription").value;
-  var nameInput = document.getElementById("discription");
-console.log(name);
-  if (name.length == 0) {
-    discritionError.innerHTML = "Discription is required";
-    discritionError.style.color = "red";
-    nameInput.style.border = "solid 2px red";
-    return false;
-  } if (!name.match(regex)) {
-    discritionError.innerHTML = "Write valid discription";
-    discritionError.style.color = "red";
-    nameInput.style.border = "solid 2px red";
+  const nameError = document.getElementById('name-error');
+  const descriptionError = document.getElementById('description-error');
+  const priceError = document.getElementById('price-error');
+  const quantityError = document.getElementById('quantity-error');
+  const formError = document.getElementById('form-error');
+  const form = document.getElementById('form');
 
-    return false;
+  function validateName() {
+    var name = document.getElementById('name').value;
+    var nameInput = document.getElementById('name');
+    if (name.length == 0) {
+      nameError.innerHTML = 'Name is required';
+      nameError.style.color = 'red';
+      nameInput.style.border = 'solid 2px red';
+      return false;
+    }
+    if (!name.match(/^[A-Za-z]{3,}$/)) {
+      nameError.innerHTML = 'Write valid name';
+      nameError.style.color = 'red';
+      nameInput.style.border = 'solid 2px red';
+
+      return false;
+    }
+    nameError.innerHTML = '';
+    // nameError.innerHTML = "Valid Name";
+    nameError.style.color = 'green';
+    nameInput.style.border = 'solid 2px green';
+
+    return true;
   }
-  discritionError.innerHTML = "";
-  // nameError.innerHTML = "Valid Name";
-  discritionError.style.color = "green";
-  nameInput.style.border = "solid 2px green";
+  function validateDescription() {
+    const description = document.getElementById('description').value;
+    const descriptionInput = document.getElementById('description');
+    console.log(name);
+    if (description.length == 0) {
+      descriptionError.innerHTML = 'Discription is required';
+      descriptionError.style.color = 'red';
+      descriptionInput.style.border = 'solid 2px red';
+      return false;
+    }
+    if (!description.match(/^[A-Za-z]{3,}$/)) {
+      descriptionError.innerHTML = 'Write valid discription';
+      descriptionError.style.color = 'red';
+      nameInput.style.border = 'solid 2px red';
+      return false;
+    }
+    descriptionError.innerHTML = '';
+    // nameError.innerHTML = "Valid Name";
+    descriptionError.style.color = 'green';
+    descriptionInput.style.border = 'solid 2px green';
+    return true;
+  }
+  function validatePrice() {
+    const price = document.getElementById('price').value;
+    const priceInput = document.getElementById('price');
+    if (price.length == 0) {
+      priceError.innerHTML = 'Price field is required';
+      priceError.style.color = 'red';
+      priceInput.style.border = 'solid 2px red';
+      return false;
+    }
+    if (!price.match(/^\d+(\.\d{1,2})?$/)) {
+      priceError.innerHTML = 'Write valid price';
+      priceError.style.color = 'red';
+      nameInput.style.border = 'solid 2px red';
+      return false;
+    }
+    priceError.innerHTML = '';
+    // nameError.innerHTML = "Valid Name";
+    priceError.style.color = 'green';
+    priceInput.style.border = 'solid 2px green';
+    return true;
+  }
+  function validateQuantity() {
+    const quantity = document.getElementById('quantity').value;
+    const quantityInput = document.getElementById('quantity');
+    console.log(name);
+    if (quantity.length == 0) {
+      quantityError.innerHTML = 'quantity field is required';
+      quantityError.style.color = 'red';
+      quantityInput.style.border = 'solid 2px red';
+      return false;
+    }
+    if (!quantity.match(/^[1-9]\d*$/)) {
+      quantityError.innerHTML = 'Write valid quantity';
+      quantityError.style.color = 'red';
+      nameInput.style.border = 'solid 2px red';
+      return false;
+    }
+    quantityError.innerHTML = '';
+    // nameError.innerHTML = "Valid Name";
+    quantityError.style.color = 'green';
+    quantityInput.style.border = 'solid 2px green';
+    return true;
+  }
 
-  return true;
-}
+  form.addEventListener('submit', (event) => {
+    event.preventDefault();
+    if (
+      !validatePrice() ||
+      !validateQuantity()|| 
+      !validateDescription()|| 
+      !validateImage() ||
+      !validateName()
+    ) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Enter details correctly!!',
+      });
+      return false;
+    } else {
+      form.submit();
+    }
+  });
 </script>

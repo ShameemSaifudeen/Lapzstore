@@ -80,7 +80,7 @@ module.exports = {
     });
   },
 
-  placeOrder: (orderData, total) => {
+  placeOrder: (orderData,total,DiscountAmount,grandTotal) => {
 
     return new Promise(async (resolve, reject) => {
       let productdetails = await user.cart.aggregate([
@@ -123,7 +123,20 @@ module.exports = {
           },
         },
       ]);
+      // Inventory Management
+      for (let i = 0; i < productdetails.length; i++) {
+        let response = await user.product.updateOne(
+          {
+            _id: productdetails[i]._id
+          },
+          {
+            $inc: {
+              Quantity: -productdetails[i].quantity
+            }
+          }
+        )
 
+      }
 
       let Address = await user.address.aggregate([
         { $match: { userid: ObjectId(orderData.user) } },
@@ -140,9 +153,9 @@ module.exports = {
       const items = Address.map((obj) => obj.item);
 
       let orderaddress = items[0];
-      let status = orderData["payment-method"] === "COD" ? "placed" : "pending";
+      let status = orderData["payment-method"] === "COD" ? "Placed" : "Pending";
       let orderstatus =
-        orderData["payment-method"] === "COD" ? "success" : "pending";
+        orderData["payment-method"] === "COD" ? "Success" : "Pending";
       let orderdata = {
         name: orderaddress.fname,
         paymentStatus: status,
@@ -152,6 +165,9 @@ module.exports = {
         shippingAddress: orderaddress,
         orderStatus: orderstatus,
         totalPrice: total,
+        discountAmount: DiscountAmount,
+        grandTotal: grandTotal
+
       };
 
       let order = await user.order.findOne({ userid: orderData.user });
@@ -205,7 +221,6 @@ module.exports = {
         if (err) {
 
         } else {
-          // console.log('new order:',order);
 
           resolve(order);
 
@@ -245,8 +260,8 @@ module.exports = {
           { "orders._id": orderId },
           {
             $set: {
-              "orders.$.orderStatus": "success",
-              "orders.$.paymentStatus": "paid",
+              "orders.$.orderStatus": "Success",
+              "orders.$.paymentStatus": "Paid",
             },
           }
         );
@@ -382,6 +397,8 @@ module.exports = {
     return data;
   },
   cancelOrder: (orderId, userId) => {
+    console.log(orderId);
+    console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
 
     return new Promise(async (resolve, reject) => {
       let orders = await user.order.find({ "orders._id": orderId });
@@ -396,13 +413,53 @@ module.exports = {
           { "orders._id": orderId },
           {
             $set: {
-              ["orders." + orderIndex + ".orderStatus"]: "cancelled",
+              ["orders." + orderIndex + ".orderStatus"]: "Cancelled",
             },
           }
         )
-        .then((orders) => {
+        .then(async(orders) => {
 
           resolve(orders);
+          let cancelledItems = await user.order.aggregate([
+            {
+              $unwind: "$orders"
+            },
+            {
+              $match: {
+                "orders._id": ObjectId(orderId)
+              }
+            },
+            {
+              $match: {
+                "orders.orderStatus": "Cancelled"
+              }
+            },
+            {
+              $unwind: "$orders.productDetails"
+            },
+            {
+              $project: {
+                _id: 0,
+                productDetails: "$orders.productDetails"
+              }
+            }
+          ]);
+          console.log(cancelledItems);
+          // after cancellation incermenting product quantity
+          for (let i = 0; i < cancelledItems.length; i++) {
+            if (cancelledItems[i].productDetails.quantity !== 0) { // Check if quantity is defined
+              let response = await user.product.updateOne(
+                {
+                  _id: cancelledItems[i].productDetails._id
+                },
+                {
+                  $inc: {
+                    Quantity: cancelledItems[i].productDetails.quantity
+                  }
+                }
+              );
+            }
+          }
         });
     });
   },
@@ -426,127 +483,65 @@ module.exports = {
 
   // coupon
 
-  applyCoupon: (code, total) => {
+  couponValidator: async (code, userId, total) => {
     return new Promise(async (resolve, reject) => {
       try {
-        let coupon = await user.coupon.findOne({ couponName: code });
+        let discountAmount;
+        let couponTotal
+        let coupon = await user.coupon.findOne({ couponName: code })
         if (coupon) {
-          //checking coupon Valid
-
-          if (new Date(coupon.expiry) - new Date() > 0) {
-            //checkingExpiry
-            if (total >= coupon.minPurchase) {
-              //checking max offer value
-              let discountAmount = (total * coupon.discountPercentage) / 100;
-              if (discountAmount > coupon.maxDiscountValue) {
-                discountAmount = coupon.maxDiscountValue;
-                total = total - discountAmount;
-                resolve({
-                  status: true,
-                  discountAmount: discountAmount,
-                  total: total,
-                });
-              } else {
-                total = total - discountAmount;
-                resolve({
-                  status: true,
-                  discountAmount: discountAmount,
-                  total: total,
-                });
-              }
-            } else {
-
-              resolve({
-                status: false,
-                reason: `Minimum purchase value is ${coupon.minPurchase}`,
-              });
+          if (total >= coupon?.minPurchase) {                          
+            discountAmount = Math.floor(total * coupon.discountPercentage) / 100
+            if (discountAmount > coupon?.maxDiscountValue) {
+              discountAmount = coupon?.maxDiscountValue
             }
-          } else {
 
-            resolve({ status: false, reason: "coupon Expired" });
+
           }
+          couponTotal = total - discountAmount
+        } else {
+          resolve({ status: false, err: "coupon does'nt exist" })
         }
-      } catch (error) {
-
-      }
-    });
-  },
-  couponVerify: (code, userId) => {
-    return new Promise(async (resolve, reject) => {
-      try {
-        let usedCoupon = await user.user.aggregate([
-          {
-            $match: { _id: ObjectId(userId) },
-          },
-          {
-            $unwind: "$coupons",
-          },
-          {
-            $match: { _id: ObjectId(userId) },
-          },
-          {
-            $match: {
-              $and: [{ "coupons.couponName": code }, { "coupons.user": false }],
-            },
-          },
-        ]);
-
-        if (usedCoupon.length == 1) {
-          resolve({ status: true });
-
-        }
-        //  else {
-
-        //   resolve({ status: false, reason: "coupon is already Used" });
-        // }
-      } catch (err) {
-
-      }
-    });
-  },
-
-  couponValidator: async (code, userId) => {
-    return new Promise(async (resolve, reject) => {
-      try {
-        let couponExists = await user.coupon.findOne({ couponName: code });
+        let couponExists = await user.coupon.findOne({ 'coupons.couponName': code })
 
         if (couponExists) {
+
           if (new Date(couponExists.expiry) - new Date() > 0) {
-            let userCouponExists = await user.user.findOne({
-              _id: userId,
-              "coupons.couponName": code,
-            });
+
+            let userCouponExists = await user.user.findOne({ _id: userId, 'coupons.couponName': code })
             if (!userCouponExists) {
-              couponObj = {
-                couponName: code,
-                user: false,
-              };
-              user.user
-                .updateOne(
-                  { _id: userId },
-                  {
-                    $push: {
-                      coupons: couponObj,
-                    },
-                  }
-                )
-                .then(() => {
-                  resolve({ status: true });
-                });
+              resolve({ discountAmount, couponTotal, total, success: ` ${code} ` + 'Coupon  Applied  SuccessFully' })
             } else {
-              resolve({ status: false, reason: "coupon already used" });
+              resolve({ status: true, err: "This Coupon Already Used" })
             }
           } else {
-            resolve({ status: false, reason: "coupon expired" });
+            resolve({ status: false, err: 'coupon expired' })
           }
         } else {
-          resolve({ status: false, reason: "coupon does'nt exist" });
+          resolve({ status: false, err: "coupon does'nt exist" })
         }
       } catch (error) {
-
+        console.log(error);
       }
-    });
+    })
   },
+  addCouponInUseroDb:(couponData,userId)=>{
+    let couponObj = {
+        couponstatus:true,
+        couponName: couponData.couponName,
+
+    }
+    return new Promise(async(resolve, reject) => {
+         
+    let response = await user.user.updateOne({_id:userId},
+            {
+                $push:{
+                   coupons:couponObj
+                }
+            })
+        resolve(response)
+    })
+},
   deleteCoupon: (couponId) => {
     return new Promise(async (resolve, reject) => {
       await user.coupon.deleteOne({ _id: couponId }).then((response) => {

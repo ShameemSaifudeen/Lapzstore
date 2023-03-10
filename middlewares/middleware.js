@@ -19,13 +19,12 @@ module.exports = {
   isUserBlock: (async (req, res, next) => {
     let userId = req.session.user.id
     let user = await db.user.findOne({ _id: userId })
-    console.log(user);
     if (!user.blocked) {
-      console.log('hi');
+    
       next()
 
     } else {
-      console.log('hlo');
+     
 
       res.redirect('/logout')
     }

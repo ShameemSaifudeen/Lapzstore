@@ -34,7 +34,7 @@
               
                   %>
                   
-                <form  action="/signup" method="post">
+                <form  action="/signup" method="post" id="form">
                   <div class="form-group">
                   
                     <input
@@ -114,12 +114,14 @@
                   
                       
                   </div>
+                  <span id="form-error" class="validation-label"></span>
+                  <br>
                   <div class="form-group d-flex justify-content-center">
                     <button
                       type="submit"
                       class="btn btn-fill-out btn-block hover-up"
                       name="login"
-                      onclick="return validateForm()"
+                    
                     >
                     
                       Submit &amp; Register
@@ -156,84 +158,85 @@
 </section>
 </main>
 <script>
-var nameError = document.getElementById("name-error");
-var emailError = document.getElementById("email-error");
-var phoneError = document.getElementById("phone-error");
-let passError=document.getElementById("pass-error");
-
-
-
-function validateName() {
-  var name = document.getElementById("name").value;
-  var nameInput = document.getElementById("name");
-
-  if (name.length == 0) {
-    nameError.innerHTML = "Name is required";
-    nameError.style.color = "red";
-    nameInput.style.border = "solid 2px red";
-    return false;
+  var nameError = document.getElementById("name-error");
+  var emailError = document.getElementById("email-error");
+  var phoneError = document.getElementById("phone-error");
+  let passError=document.getElementById("pass-error");
+  let formError=document.getElementById("form-error");
+  let form=document.getElementById('form')
+  
+  
+  
+  function validateName() {
+    var name = document.getElementById("name").value;
+    var nameInput = document.getElementById("name");
+  
+    if (name.length == 0) {
+      nameError.innerHTML = "Name is required";
+      nameError.style.color = "red";
+      nameInput.style.border = "solid 2px red";
+      return false;
+    }
+    if (!name.match(/^[A-Za-z]{3,}$/)) {
+      nameError.innerHTML = "Write valid name";
+      nameError.style.color = "red";
+      nameInput.style.border = "solid 2px red";
+  
+      return false;
+    }
+    nameError.innerHTML = "";
+    // nameError.innerHTML = "Valid Name";
+    nameError.style.color = "green";
+    nameInput.style.border = "solid 2px green";
+  
+    return true;
   }
-  if (!name.match(/^[A-Za-z]{3,}$/)) {
-    nameError.innerHTML = "Write valid name";
-    nameError.style.color = "red";
-    nameInput.style.border = "solid 2px red";
-
-    return false;
+  function validateEmail() {
+    var email = document.getElementById("email").value;
+    var emailInput = document.getElementById("email");
+  
+    if (email.length == 0) {
+      emailError.innerHTML = "Email is required";
+      emailError.style.color = "red";
+      emailInput.style.border = "solid 2px red";
+  
+      return false;
+    }
+    if (!email.match(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/)) {
+      emailError.innerHTML = "Email invalid";
+      emailError.style.color = "red";
+      emailInput.style.border = "solid 2px red";
+  
+      return false;
+    }
+    emailError.innerHTML = "";
+    emailError.style.color = "green";
+    emailInput.style.border = "solid 2px green";
+    return true;
   }
-  nameError.innerHTML = "";
-  // nameError.innerHTML = "Valid Name";
-  nameError.style.color = "green";
-  nameInput.style.border = "solid 2px green";
-
-  return true;
-}
-function validateEmail() {
-  var email = document.getElementById("email").value;
-  var emailInput = document.getElementById("email");
-
-  if (email.length == 0) {
-    emailError.innerHTML = "Email is required";
-    emailError.style.color = "red";
-    emailInput.style.border = "solid 2px red";
-
-    return false;
+  function validatePhone(){
+    var phone = document.getElementById("phone").value;
+    var phoneInput = document.getElementById("phone");
+  
+    if (phone.length == 0) {
+      phoneError.innerHTML = "phone number is required";
+      phoneError.style.color = "red";
+      phoneInput.style.border = "solid 2px red";
+      return false;
+    }
+    if (!phone.match(/^\d{10}$/)) {
+      phoneError.innerHTML = "Enter valid number";
+      phoneError.style.color = "red";
+      phoneInput.style.border = "solid 2px red";
+  
+  
+  return false;
+    }
+    phoneError.innerHTML = "";
+    phoneError.style.color = "green";
+    phoneInput.style.border = "solid 2px green";
+    return true;
   }
-  if (!email.match(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/)) {
-    emailError.innerHTML = "Email invalid";
-    emailError.style.color = "red";
-    emailInput.style.border = "solid 2px red";
-
-    return false;
-  }
-  emailError.innerHTML = "";
-  emailError.style.color = "green";
-  emailInput.style.border = "solid 2px green";
-  return true;
-}
-function validatePhone(){
-  var phone = document.getElementById("phone").value;
-  var phoneInput = document.getElementById("phone");
-
-  if (phone.length == 0) {
-    phoneError.innerHTML = "phone number is required";
-    phoneError.style.color = "red";
-    phoneInput.style.border = "solid 2px red";
-    return false;
-  }
-  if (!phone.match(/^\d{10}$/)) {
-    phoneError.innerHTML = "Enter valid number";
-    phoneError.style.color = "red";
-    phoneInput.style.border = "solid 2px red";
-
-
-return false;
-  }
-  phoneError.innerHTML = "";
-  phoneError.style.color = "green";
-  phoneInput.style.border = "solid 2px green";
-  return true;
-
-}
 function validatePassword(){
     
 let password = document.getElementById("password").value;
@@ -242,14 +245,7 @@ let cnfrmPassword = document.getElementById("cnfrm-password").value;
 let cnfrmPasswordInput= document.getElementById("cnfrm-password")
 
     if(password.length != 0){
-        if(password == cnfrmPassword){
-            passError.innerHTML = "Passwords match";
-            passError.style.color = "green";
-            passwordInput.style.border = "solid 2px green";
-            cnfrmPasswordInput.style.border = "solid 2px green";
-            return true
-        }
-        else if (!password.match(/[a-zA-Z]/)) {
+         if (!password.match(/[a-zA-Z]/)) {
           passError.innerHTML = "Password must contain atleast 1 letter";
           passError.style.color = "red";
           passwordInput.style.border = "solid 2px red";
@@ -267,35 +263,36 @@ let cnfrmPasswordInput= document.getElementById("cnfrm-password")
           passwordInput.style.border = "solid 2px red";
           return false;
         }
-        else{
-            passError.innerHTML = "Password don't match";
-            passError.style.color = "red";
-            passwordInput.style.border = "solid 2px red";
-            return false
-
-
-        }
     }
     else{
         
         message.textContent = "";
     }
+     if(password == cnfrmPassword){
+            passError.innerHTML = "Passwords match";
+            passError.style.color = "green";
+            passwordInput.style.border = "solid 2px green";
+            cnfrmPasswordInput.style.border = "solid 2px green";
+            return true
+        }
 }
-function validateForm() {
-  if (
-    !validateName() ||
-    !validateEmail() 
-  ) {
-    submitError.style.display = "block";
-    submitError.innerHTML = "Please fix all errors to submit.";
-    setTimeout(function () {
-      submitError.style.display = "none";
-    }, 3000);
-    return false;
-  }
-}
+form.addEventListener('submit',(event)=>
+  {
+    event.preventDefault();
+    if(!validateName() ||  !validateEmail() || !validatePhone() || !validatePassword())
+    {
+  Swal.fire({
+  icon: 'error',
+  title: 'Enter details correctly!!',
+  
+})
+      return false;
+    }
+    else
+    {
+      form.submit();
+    }
+  })
 
-  setTimeout(function() {
-    document.getElementById('message').style.display = 'none';
-  }, 3000);
+
 </script>

@@ -114,7 +114,7 @@
                     <td class="image product-thumbnail"><img src="/uploads/<%=cartItems.cartItems.Image[0] %>"></td>
                     <td>
 
-                      <h5><a href="shop-product-full.html">
+                      <h5><a href="#">
                           <%=cartItems.cartItems.Productname%>
                         </a></h5> <span class="product-qty"> x<%=cartItems.quantity%></span>
                     </td>
@@ -132,6 +132,10 @@
                     <tr>
                       <th>Shipping</th>
                       <td colspan="2"><em>Free Shipping</em></td>
+                    </tr>
+                    <tr>
+                      <th>Discount Amount</th>
+                      <td colspan="2"><em><%=DiscountAmount%></em></td>
                     </tr>
                     <tr>
                       <th>Total</th>

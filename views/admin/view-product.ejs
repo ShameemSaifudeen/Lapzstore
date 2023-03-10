@@ -25,7 +25,7 @@
                 <tr>
                   <th class="align-middle" scope="col">No:</th>
                   <th class="align-middle" scope="col">Product Name</th>
-                  <th class="align-middle" scope="col">Discription</th>
+                  <th class="align-middle" scope="col">Description</th>
                   <th class="align-middle" scope="col">Price</th>
                   <th class="align-middle" scope="col">Category</th>
                   <th class="align-middle" scope="col">Quantity</th>
@@ -71,6 +71,24 @@
           <% }) %>
               </tbody>
             </table>
+          </div>
+          <div class="pagination-area mt-15 mb-sm-5 mb-lg-0">
+            <nav aria-label="Page navigation example">
+              <ul class="pagination justify-content-start">
+                <% for(let i=1;i<=pages;i++){%>
+                <li class="page-item active">
+                  <a class="page-link" href="/admin/view_product?page=<%=i%>"><%= i%></a>
+                </li>
+        
+                <%}%>
+        
+                <!-- <li class="page-item">
+                  <a class="page-link" href="#"
+                    ><i class="fi-rs-angle-double-small-right"></i
+                  ></a>
+                </li> -->
+              </ul>
+            </nav>
           </div>
         </div>
         <!-- table-responsive end// -->

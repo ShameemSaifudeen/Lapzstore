@@ -77,7 +77,7 @@
                       <div class="pro-details-brand">
                         <span>
                           Category:
-                          <a href="shop-grid-right.html"
+                          <a href="#"
                             ><%= data.category%></a
                           ></span
                         >
@@ -94,16 +94,16 @@
                     <div class="clearfix product-price-cover">
                       <div class="product-price primary-color float-left">
                         <ins
-                          ><span class="text-brand"><%=data.Price%></span></ins
+                          ><span class="text-brand"><strong>₹</strong><%=data.Price%></span></ins
                         >
-                        <ins
+                        <!-- <ins
                           ><span class="old-price font-md ml-15"
                             >$200.00</span
-                          ></ins
-                        >
+                          ></ins -->
+                        <!-- >
                         <span class="save-price font-md color3 ml-15"
                           >25% Off</span
-                        >
+                        > -->
                       </div>
                     </div>
                     <div class="bt-1 border-color-1 mt-15 mb-15"></div>
@@ -113,8 +113,12 @@
                     <div class="product_sort_info font-xs mb-30">
                       <ul>
                         <li class="mb-10">
-                          <i class="fi-rs-crown mr-5"></i> 1 Year AL Jazeera
-                          Brand Warranty
+                       <strong><%= data.ProductDescription%></strong> 
+                        </li>
+                        <li class="mb-10">
+                          Availability:<span class="in-stock text-success ml-5"
+                            ><%=data.Quantity%> In Stock</span
+                          >
                         </li>
                         <li class="mb-10">
                           <i class="fi-rs-refresh mr-5"></i> 30 Day Return
@@ -126,52 +130,13 @@
                         </li>
                       </ul>
                     </div>
-                    <div class="attr-detail attr-color mb-15">
-                      <strong class="mr-10">Color</strong>
-                      <ul class="list-filter color-filter">
-                        <li>
-                          <a href="#" data-color="Red"
-                            ><span class="product-color-red"></span
-                          ></a>
-                        </li>
-                        <li>
-                          <a href="#" data-color="Yellow"
-                            ><span class="product-color-yellow"></span
-                          ></a>
-                        </li>
-                        <li class="active">
-                          <a href="#" data-color="White"
-                            ><span class="product-color-white"></span
-                          ></a>
-                        </li>
-                        <li>
-                          <a href="#" data-color="Orange"
-                            ><span class="product-color-orange"></span
-                          ></a>
-                        </li>
-                        <li>
-                          <a href="#" data-color="Cyan"
-                            ><span class="product-color-cyan"></span
-                          ></a>
-                        </li>
-                        <li>
-                          <a href="#" data-color="Green"
-                            ><span class="product-color-green"></span
-                          ></a>
-                        </li>
-                        <li>
-                          <a href="#" data-color="Purple"
-                            ><span class="product-color-purple"></span
-                          ></a>
-                        </li>
-                      </ul>
-                    </div>
+                   
                     <div class="attr-detail attr-size">
                       
                     </div>
                     <div class="bt-1 border-color-1 mt-30 mb-30"></div>
                     <div class="detail-extralink">
-                      <div class="detail-qty border radius">
+                      <!-- <div class="detail-qty border radius">
                         <a href="#" class="qty-down"
                           ><i class="fi-rs-angle-small-down"></i
                         ></a>
@@ -179,7 +144,7 @@
                         <a href="#" class="qty-up"
                           ><i class="fi-rs-angle-small-up"></i
                         ></a>
-                      </div>
+                      </div> -->
                       <div class="product-extra-link2">
                         <button type="submit" class="button button-add-to-cart" onclick="addtocart('<%-data._id%>');Swal.fire({
                           position: 'center',
@@ -193,18 +158,18 @@
                         <a
                           aria-label="Add To Wishlist"
                           class="action-btn hover-up"
-                          href="shop-wishlist.html"
+                          href="#"
                           ><i class="fi-rs-heart"></i
                         ></a>
-                        <a
+                        <!-- <a
                           aria-label="Compare"
                           class="action-btn hover-up"
                           href="shop-compare.html"
                           ><i class="fi-rs-shuffle"></i
-                        ></a>
+                        ></a> -->
                       </div>
                     </div>
-                    <ul class="product-meta font-xs color-grey mt-50">
+                    <!-- <ul class="product-meta font-xs color-grey mt-50">
                       <li class="mb-5">SKU: <a href="#">FWM15VKT</a></li>
                       <li class="mb-5">
                         Tags: <a href="#" rel="tag">Cloth</a>,
@@ -216,7 +181,7 @@
                           >8 Items In Stock</span
                         >
                       </li>
-                    </ul>
+                    </ul> -->
                   </div>
                   <!-- Detail Info -->
                 </div>
@@ -224,7 +189,7 @@
               <% }) %>
 
               <div class="row"></div>
-              <div class="row mt-60">
+              <!-- <div class="row mt-60">
                 <div class="col-12">
                   <h3 class="section-title style-1 mb-30">Related products</h3>
                 </div>
@@ -485,7 +450,7 @@
                     </div>
                   </div>
                 </div>
-              </div>
+              </div> -->
             </div>
           </div>
         </div>

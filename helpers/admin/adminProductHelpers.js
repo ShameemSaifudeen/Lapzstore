@@ -18,7 +18,19 @@ module.exports = {
       });
     });
   },
-  ViewProduct: () => {
+  ViewProduct: (pageNum,perPage) => {
+
+    return new Promise(async (resolve, reject) => {
+      await db.product
+        .find()
+        .skip((pageNum - 1) * perPage).limit(perPage)
+        .then((response) => {
+          resolve(response);
+        });
+    });
+  },
+  countProduct: () => {
+
     return new Promise(async (resolve, reject) => {
       await db.product
         .find()
@@ -63,7 +75,7 @@ module.exports = {
         });
     });
   },
-  postEditProduct: (productId, editedData, filename) => {
+  postEditProduct: (productId, editedData, images) => {
     return new Promise(async (resolve, reject) => {
       await db.product
         .updateOne(
@@ -75,13 +87,15 @@ module.exports = {
               Quantity: editedData.quantity,
               Price: editedData.price,
               category: editedData.category,
-              Image: filename,
+              Image: images,
             },
           }
         )
         .then((response) => {
           resolve(response);
-        });
+        }).catch((err)=>{
+          reject(err)
+        })
     });
   },
 }

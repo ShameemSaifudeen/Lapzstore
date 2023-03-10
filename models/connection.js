@@ -37,7 +37,11 @@ const userschema = new mongoose.Schema({
   blocked: {
     type: Boolean, default: false
   },
-  coupons: { type: Array },
+  coupons: [{
+    couponName: { type: String },
+    couponstatus: { type: Boolean, default: false }
+
+  }],
   CreatedAt: {
     type: Date,
     deafault: Date.now,
@@ -143,10 +147,13 @@ const orderSchema = new mongoose.Schema({
     totalQuantity: Number,
     shippingAddress: Object,
     paymentmode: String,
+    grandTotal: Number,
+    discountAmount: Number,
     status: {
       type: Boolean,
       default: true
     },
+    
     createdAt: {
       type: Date,
       default: new Date()

@@ -59,7 +59,7 @@ module.exports = {
     let ordersPerDay = {};
     let paymentCount = [];
 
-    let Products = await adminProductHelpers.ViewProduct();
+    let Products = await adminProductHelpers.countProduct();
 
     totalProducts = Products.length;
 
@@ -120,11 +120,20 @@ module.exports = {
 
     // res.render("admin/admin-dashboard", { layout: "adminLayout", variable, adminStatus });
   },
-  getViewUser: (req, res) => {
-    adminHelper.getUsers().then((user) => {
+  getViewUser: async (req, res) => {
+
+    const pageNum = req.query.page;
+    const currentPage = pageNum;
+    const perPage = 10;
+    documentCount = await adminHelper.documentCount();
+    let pages = Math.ceil(parseInt(documentCount) / perPage);
+    adminHelper.getUsers(pageNum).then((user) => {
       res.render("admin/view-users", {
         layout: "adminLayout",
         user,
+        currentPage,
+        documentCount,
+        pages,
         adminStatus,
       });
     });
@@ -210,12 +219,20 @@ module.exports = {
       res.redirect("/admin/view_product");
     });
   },
-  getViewproduct: (req, res) => {
-    adminProductHelpers.ViewProduct().then((response) => {
+  getViewproduct: async(req, res) => {
+    const pageNum = req.query.page;
+    const currentPage = pageNum;
+    const perPage = 10;
+    const documentCount = await adminHelper.documentCount();
+    let pages = Math.ceil(parseInt(documentCount) / perPage);
+    adminProductHelpers.ViewProduct(pageNum,perPage).then((response) => {
       res.render("admin/view-product", {
         layout: "adminLayout",
         adminStatus,
         response,
+        currentPage,
+        documentCount,
+        pages
       });
     });
   },
@@ -237,10 +254,77 @@ module.exports = {
   //posteditaddproduct
 
   postEditAddProduct: (req, res) => {
+    const images = []
+    if (!req.files.image1) {
+      let image1 = req.body.image1
+      req.files.image1 = [{
+        fieldname: 'image1',
+        originalname: req.body.image1,
+        encoding: '7bit',
+        mimetype: 'image/jpeg',
+        destination: 'public/uploads',
+        filename: req.body.image1,
+        path: ` public\\uploads\\${image1}`,
+      }]
+    }
+    if (!req.files.image2) {
+      let image2 = req.body.image2
+      req.files.image2 = [{
+        fieldname: 'image2',
+        originalname: req.body.image2,
+        encoding: '7bit',
+        mimetype: 'image/jpeg',
+        destination: 'public/uploads',
+        filename: req.body.image2,
+        path: `public\\uploads\\${image2}`,
+      }]
+    }
+    if (!req.files.image3) {
+      let image3 = req.body.image3
+      req.files.image3 = [{
+        fieldname: 'image3',
+        originalname: req.body.image3,
+        encoding: '7bit',
+        mimetype: 'image/jpeg',
+        destination: 'public/uploads',
+        filename: req.body.image3,
+        path: `public\\uploads\\${image3}`,
+      }]
+    }
+    if (!req.files.image4) {
+
+      let image4 = req.body.image4
+      req.files.image4 = [{
+        fieldname: 'image4',
+        originalname: req.body.image4,
+        encoding: '7bit',
+        mimetype: 'image/jpeg',
+        destination: 'public/uploads',
+        filename: req.body.image4,
+        path: `public\\uploads\\${image4}`,
+      }]
+
+    }
+
+    if (req.files) {
+      Object.keys(req?.files).forEach((key) => {
+        if (Array.isArray(req?.files[key])) {
+          req?.files[key]?.forEach((file) => {
+            images.push(file.filename);
+          });
+        } else {
+          images.push(req?.files[key]?.filename);
+        }
+      });
+    }
+
     adminProductHelpers
-      .postEditProduct(req.params.id, req.body, req?.file?.filename)
+      .postEditProduct(req.params.id, req.body, images)
       .then((response) => {
         res.redirect("/admin/view_product");
+      })
+      .catch((err) => {
+        res.status(500).send('Internal server error');
       });
   },
 

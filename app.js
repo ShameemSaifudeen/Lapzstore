@@ -5,10 +5,13 @@ const cookieParser = require("cookie-parser");
 const logger = require("morgan");
 const expressLayouts = require("express-ejs-layouts");
 const session= require('express-session')
+const connectDB = require('./models/atlasConnect')
+require('dotenv').config()
+console.log(process.env)
 
 // DB connection
 
-const db = require("./models/connection");
+// const db = require("./models/connection");
 
 const userRouter = require("./routes/user");
 const adminRouter = require("./routes/admin");
@@ -30,6 +33,15 @@ app.use(session({secret:"key", resave: true,saveUninitialized: true,cookie:{maxA
 
 app.use("/", userRouter);
 app.use("/admin", adminRouter);
+const start = function () {
+  try {
+    connectDB(process.env.MONGO_URL)
+  }
+  catch (err) {
+    console.log(err);
+  }
+}
+start()
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {    

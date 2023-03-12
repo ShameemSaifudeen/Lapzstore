@@ -1,5 +1,10 @@
 <div class="container-fluid">
-            
+    <% if(response.length==0){%>
+        <div class="d-flex justify-content-center align-items-center">
+          <h2 class="">No Orders Available</h2>
+    
+        </div>
+        <%}else{%> 
     <section class="content-main container w-100">
         <div class="content-header">
             <div>
@@ -58,5 +63,7 @@
             </nav>
         </div>
     </section> <!-- content-main end// -->
+    <%}
+    %>
   
 </div>

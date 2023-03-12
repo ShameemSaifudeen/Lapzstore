@@ -42,6 +42,7 @@
                       name="username"
                       id="name"
                       onkeyup="validateName()"
+                      required=""
                       placeholder="Username"
                     />
                   <span id="name-error" class="validation-label"></span>
@@ -177,7 +178,7 @@
       nameInput.style.border = "solid 2px red";
       return false;
     }
-    if (!name.match(/^[A-Za-z]{3,}$/)) {
+    if (!name.match(/^[A-Z a-z]{3,}$/)) {
       nameError.innerHTML = "Write valid name";
       nameError.style.color = "red";
       nameInput.style.border = "solid 2px red";

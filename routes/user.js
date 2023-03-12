@@ -77,6 +77,10 @@ router.get('/order_success',middleware.userSession,middleware.isUserBlock,contro
 
 router.get("/add_address", middleware.userSession,middleware.isUserBlock, controllers.getAddresspage)
 
+router.get("/profile_add_address", middleware.userSession,middleware.isUserBlock, controllers.getProfileAddresspage)
+
+router.post('/profile_add_address', middleware.userSession, controllers.postProfileAddresspage)
+
 router.post('/add_address', middleware.userSession, controllers.postAddresspage)
 
 // router.get("/coupon_validator",middleware.userSession, controllers.couponValidator);

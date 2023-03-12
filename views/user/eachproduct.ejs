@@ -156,11 +156,17 @@
                           Add to cart
                         </button>
                         <a
-                          aria-label="Add To Wishlist"
-                          class="action-btn hover-up"
-                          href="#"
-                          ><i class="fi-rs-heart"></i
-                        ></a>
+                        aria-label="Add To Wishlist"
+                        class="action-btn hover-up"
+                        onclick="addtowishlist('<%= data._id%>');Swal.fire({
+                        position: 'center',
+                        icon: 'success',
+                        title: 'Product is successfully added to Wishlist',
+                        showConfirmButton: false,
+                        timer: 1500
+                      })"
+                        ><i class="fi-rs-heart"></i
+                      ></a>
                         <!-- <a
                           aria-label="Compare"
                           class="action-btn hover-up"
@@ -459,7 +465,18 @@
   </main>
 </body>
 <script>
-  
+    function addtowishlist(proId) {
+    console.log(proId);
+    $.ajax({
+      url: "/add_to_wishlist?wishid=" + proId,
+      method: "get",
+      success: (response) => {
+        let count = $("#wish-count").html();
+        count = parseInt(count) + 1;
+        $("#wish-count").html(count);
+      },
+    });
+  }
   function addtocart(proId) {
       
   

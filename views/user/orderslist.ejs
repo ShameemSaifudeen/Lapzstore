@@ -1,7 +1,15 @@
 <div class="container">
+  <% if(response.length==0){%>
+    <div class="d-flex justify-content-center">
+      <img src="/assets/imgs/banner/empty-box.png" alt="" />
+      
+       <!-- <h3>No Orders Available</h3> -->
+    </div>
+    <%} else{%>
 <div class="card-body">
   <div class="table-responsive">
     <div class="table-responsive">
+      
       <table class="table align-middle table-nowrap mb-0">
         <thead class="table-light">
           <tr>
@@ -35,6 +43,7 @@
         </tbody>
       </table>
     </div>
+    <%}%>
   </div>
 
 </div>

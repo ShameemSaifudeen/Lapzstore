@@ -23,11 +23,11 @@ module.exports = {
     if (req.session.userLoggedIn) {
       count = await cartHelpers.getCartItemsCount(req.session.user.id);
       wishCount = await wishListHelpers.getWishCount(req.session.user.id);
-      homeList = await productHelpers.shopListProduct();
+      homeList = await productHelpers.homeListProduct();
 
       res.render("user/user", { userSession, count, homeList, wishCount });
     } else {
-      homeList = await productHelpers.shopListProduct();
+      homeList = await productHelpers.homeListProduct();
 
       res.render("user/user", { userSession, homeList });
     }
@@ -44,7 +44,7 @@ module.exports = {
 
   getProfile: async (req, res) => {
     const data = await profileHelpers.findUser(req.session.user.id);
-    res.render("user/profile", { userSession, data });
+    res.render("user/profile", { userSession, data,wishCount,count });
   },
 
   updateProfile: (req, res) => {
@@ -55,7 +55,7 @@ module.exports = {
   resetPassword: (req, res) => {
     let user = req.session.user.id;
   
-    res.render("user/reset-password", { userSession, user });
+    res.render("user/reset-password", { userSession, user,wishCount,count });
   },
   updatePassword: async (req, res) => {
    
@@ -167,9 +167,9 @@ module.exports = {
   },
   getShop: async (req, res) => {
   
-    let pageNum = req.query.page;
-    let currentPage = pageNum;
-    let perPage = 6;
+    const pageNum = req.query.page;
+    const currentPage = pageNum;
+    const perPage = 9;
     count = await cartHelpers.getCartItemsCount(req.session.user.id);
     viewCategory = await adminHelper.viewAddCategory();
     documentCount = await productHelpers.documentCount(); 
@@ -468,7 +468,7 @@ module.exports = {
   getAddress: async (req, res) => {
     let response = await addressHelpers.checkOutpage(req.session.user.id);
 
-    res.render("user/address", { response, userSession });
+    res.render("user/address", { response, userSession,wishCount,count });
   },
   deleteAddress: (req, res) => {
     addressHelpers.deleteAddress(req.body).then((response) => {
@@ -486,10 +486,25 @@ module.exports = {
       wishCount,
     });
   },
+  getProfileAddresspage: async (req, res) => {
+ 
+    res.render("user/profile-add-address", {
+      userSession,
+      viewCategory,
+      count,
+      wishCount,
+    });
+  },
   postAddresspage: (req, res) => {
     addressHelpers.
       postAddress(req.session.user.id, req.body).then(() => {
         res.redirect("/check_out");
+      });
+  },
+  postProfileAddresspage: (req, res) => {
+    addressHelpers.
+      postAddress(req.session.user.id, req.body).then(() => {
+        res.redirect("/view_address");
       });
   },
  

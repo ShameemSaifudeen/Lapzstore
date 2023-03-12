@@ -1,5 +1,10 @@
 <div class="main_container container">
+  <% if(Details.length==0){%>
+    <div class="d-flex justify-content-center align-items-center">
+      <h2 class="">No Orders Available</h2>
 
+    </div>
+    <%}else{%>
     <div class="d-flex justify-content-center m-4">
         <button type="button" class="btn btn-danger btn_print me-3"
             value="Download as Pdf">Download PDF</button>
@@ -69,7 +74,8 @@
 <hr>
 
 <hr>
-
+<%}
+%>
 </div>
 
 

@@ -207,7 +207,7 @@
       apartmentInput.style.border = 'solid 2px red';
       return false;
     }
-    if (!apartment.match(/^[A-Za-z]{3,}$/)) {
+    if (!apartment.match(/^[A-Z a-z]{3,}$/)) {
       apartmentError.innerHTML = 'Write valid apartment name';
       apartmentError.style.color = 'red';
       apartmentInput.style.border = 'solid 2px red';

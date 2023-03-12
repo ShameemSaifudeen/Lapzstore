@@ -30,23 +30,28 @@
                                         <div class="col-lg-8">
                                             <div class="row gx-3">
                                                 <div class="col-6 mb-3">
-                                                    <label class="form-label">First Name</label>
-                                                    <input class="form-control" name="fname" type="text" value="<%=data.username%>" >
-                                    
+                                                    <label class="form-label">User Name</label>
+                                                    <input class="form-control" name="fname" type="text" id="name"  
+                                                    required="" value="<%=data.username%>"  onkeyup="validateName()">
+                                                    <span id="name-error" class="validation-label"></span>
                                                 </div> <!-- col .// -->
-                                                <div class="col-6 mb-3">
+                                                <!-- <div class="col-6 mb-3">
 
                                                 <label class="form-label">Last Name</label>
                                             
                                                   <input class="form-control" name="lname" type="text" value="<%=data.username%>" >
-                                                </div>
+                                                </div> -->
                                                 <div class="col-lg-6  mb-3">
                                                     <label class="form-label">Email</label>
-                                                    <input class="form-control" name="email" type="email" value="<%=data.email%>">
+                                                    <input class="form-control" name="email" type="email" id="email" onkeyup="validateEmail()" required="  " value="<%=data.email%>">
+                                                   
+                                                    <span id="email-error" class="validation-label"></span>
+
                                                 </div> <!-- col .// -->
                                                 <div class="col-lg-6  mb-3">
                                                     <label class="form-label">Phone</label>
-                                                    <input class="form-control" name="phone" type="number" value="<%=data.phonenumber%>">
+                                                    <input class="form-control" name="phone" type="number" id="phone" onkeyup="validatePhone()" required="  " value="<%=data.phonenumber%>">
+                                                    <span id="phone-error" class="validation-label"></span>
                                                 </div> <!-- col .// -->
                                              
                                                
@@ -56,7 +61,8 @@
                                       
                                     </div> <!-- row.// -->
                                     <br>
-                                    <button class="btn btn-primary" onclick="changeProfile('<%=data._id%>')">Save changes</button>
+
+                                    <button class="btn btn-primary" onclick="if(validate()==true){changeProfile('<%=data._id%>')}">Save changes</button>
 
                                 </form>
                                 
@@ -104,3 +110,94 @@
 
 }
 </script>
+<script>
+    var nameError = document.getElementById("name-error");
+    var emailError = document.getElementById("email-error");
+    var phoneError = document.getElementById("phone-error");
+    function validateName() {
+        console.log(">>>>>>>>>>");
+    var name = document.getElementById("name").value;
+    var nameInput = document.getElementById("name");
+  
+    if (name.length == 0) {
+      nameError.innerHTML = "Name is required";
+      nameError.style.color = "red";
+      nameInput.style.border = "solid 2px red";
+      return false;
+    }
+    if (!name.match(/^[A-Z a-z]{3,}$/)) {
+      nameError.innerHTML = "Write valid name";
+      nameError.style.color = "red";
+      nameInput.style.border = "solid 2px red";
+  
+      return false;
+    }
+    nameError.innerHTML = "";
+    // nameError.innerHTML = "Valid Name";
+    nameError.style.color = "green";
+    nameInput.style.border = "solid 2px green";
+  
+    return true;
+  }
+  function validateEmail() {
+    var email = document.getElementById("email").value;
+    var emailInput = document.getElementById("email");
+  
+    if (email.length == 0) {
+      emailError.innerHTML = "Email is required";
+      emailError.style.color = "red";
+      emailInput.style.border = "solid 2px red";
+  
+      return false;
+    }
+    if (!email.match(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/)) {
+      emailError.innerHTML = "Email invalid";
+      emailError.style.color = "red";
+      emailInput.style.border = "solid 2px red";
+  
+      return false;
+    }
+    emailError.innerHTML = "";
+    emailError.style.color = "green";
+    emailInput.style.border = "solid 2px green";
+    return true;
+  }
+  function validatePhone(){
+    var phone = document.getElementById("phone").value;
+    var phoneInput = document.getElementById("phone");
+  
+    if (phone.length == 0) {
+      phoneError.innerHTML = "phone number is required";
+      phoneError.style.color = "red";
+      phoneInput.style.border = "solid 2px red";
+      return false;
+    }
+    if (!phone.match(/^\d{10}$/)) {
+      phoneError.innerHTML = "Enter valid number";
+      phoneError.style.color = "red";
+      phoneInput.style.border = "solid 2px red";
+  
+  
+  return false;
+    }
+    phoneError.innerHTML = "";
+    phoneError.style.color = "green";
+    phoneInput.style.border = "solid 2px green";
+    return true;
+  }
+  function validate(){
+    if(!validateName() ||  !validateEmail() || !validatePhone())
+    {
+  Swal.fire({
+  icon: 'error',
+  title: 'Enter details correctly!!',
+  
+})
+      return false;
+    }
+    else
+    {
+      return true
+    }
+  }
+  </script>

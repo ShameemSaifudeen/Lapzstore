@@ -1,106 +1,106 @@
 <div class="col-12 grid-margin">
-    <div class="card">
-      <div class="card-body">
-        <h4 class="card-title pb-5">Add new coupon</h4>
-        <form class="form-sample">
-          <!-- <p class="card-description">
-                        Personal info
-                      </p> -->
-          <div class="alert alert-danger" id="errorDisplay" role="alert" hidden>
-  
-          </div>
-          <div class="col">
-            <div class="col-md-6">
-              <div class="form-group row">
-                <label class="col-sm-3 col-form-label">Coupon Code</label>
-                <div class="col-sm-9">
-                  <div class="input-group ">
-                    <input type="text" id="couponName" value="" class="form-control" placeholder="Generate Coupon Code" aria-label="Recipient's username" aria-describedby="basic-addon2">
-                    <div class="input-group-append">
-                      <a class="btn btn-outline-info" onclick="generateCoupon()">Generate Code</a>
-                    </div>
+  <div class="card">
+    <div class="card-body">
+      <h4 class="card-title pb-5">Add new coupon</h4>
+      <form class="form-sample">
+        <!-- <p class="card-description">
+                      Personal info
+                    </p> -->
+        <div class="alert alert-danger" id="errorDisplay" role="alert" hidden>
+
+        </div>
+        <div class="col">
+          <div class="col-md-6">
+            <div class="form-group row">
+              <label class="col-sm-3 col-form-label">Coupon Code</label>
+              <div class="col-sm-9">
+                <div class="input-group ">
+                  <input type="text" id="couponName" value="" class="form-control" placeholder="Generate Coupon Code" aria-label="Recipient's username" aria-describedby="basic-addon2">
+                  <div class="input-group-append">
+                    <a class="btn btn-outline-info" onclick="generateCoupon()">Generate Code</a>
                   </div>
                 </div>
               </div>
             </div>
-  
-            <div class="col-md-6">
-              <div class="form-group row">
-                <label class="col-sm-3 col-form-label">Validity</label>
-                <div class="col-sm-9">
-                  <input type="date" name="" class="form-control" id="validity" cols="45" rows="5"></input>
-                </div>
-              </div>
-            </div>
-  
-            <div class="col-md-6">
-              <div class="form-group row">
-                <label class="col-sm-3 col-form-label">Min Purchase </label>
-                <div class="col-sm-9">
-                  <input id="minAmount" type="text" class="form-control" />
-                </div>
-              </div>
-            </div>
-  
-  
-            <div class="col-md-6 discPer ">
-              <div class="form-group row">
-                <label class="col-sm-3 col-form-label">Discount ( % )</label>
-                <div class="col-sm-9">
-                  <input id="discountPercentage" type="number" class="form-control" />
-                </div>
-              </div>
-            </div>
-  
-            <div class="col-md-6" id="maxdiscountfield">
-              <div class="form-group row">
-                <label class="col-sm-3 col-form-label">Max Discount(Rs)</label>
-                <div class="col-sm-9">
-                  <input id="maxDiscountValue" type="text" class="form-control" />
-                </div>
-              </div>
-            </div>
-  
-  
-            <div class="col-md-6">
-              <div class="form-group row">
-                <label class="col-sm-3 col-form-label">Description(T&C)</label>
-                <div class="col-sm-9">
-                  <textarea name="" class="form-control" id="description" cols="45" rows="5"></textarea>
-                </div>
-              </div>
-            </div>
-  
-            <a type="button" class="btn btn-outline-info col-sm-3 col-form-label" onclick="validatorCoupen()">Submit</a>
-  
           </div>
-      </div>
-      </form>
+
+          <div class="col-md-6">
+            <div class="form-group row">
+              <label class="col-sm-3 col-form-label">Validity</label>
+              <div class="col-sm-9">
+                <input type="date" name="" class="form-control" id="validity" cols="45" rows="5"></input>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="form-group row">
+              <label class="col-sm-3 col-form-label">Min Purchase </label>
+              <div class="col-sm-9">
+                <input id="minAmount" type="text" class="form-control" onkeyup="validateMinAmount"/>
+              </div>
+            </div>
+          </div>
+
+
+          <div class="col-md-6 discPer ">
+            <div class="form-group row">
+              <label class="col-sm-3 col-form-label">Discount ( % )</label>
+              <div class="col-sm-9">
+                <input id="discountPercentage" type="number" class="form-control" />
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-6" id="maxdiscountfield">
+            <div class="form-group row">
+              <label class="col-sm-3 col-form-label">Max Discount(Rs)</label>
+              <div class="col-sm-9">
+                <input id="maxDiscountValue" type="text" class="form-control" />
+              </div>
+            </div>
+          </div>
+
+
+          <div class="col-md-6">
+            <div class="form-group row">
+              <label class="col-sm-3 col-form-label">Description(T&C)</label>
+              <div class="col-sm-9">
+                <textarea name="" class="form-control" id="description" cols="45" rows="5"></textarea>
+              </div>
+            </div>
+          </div>
+
+          <a type="button" class="btn btn-outline-info col-1" onclick="validatorCoupen()">Submit</a>
+
+        </div>
     </div>
+    </form>
   </div>
-  </div>
-  
-  <script>
-    function validatorCoupen() {
-      const coupenName = document.getElementById('couponName').value
-      const validity = document.getElementById('validity').value
-      const minAmount = document.getElementById('minAmount').value
-      const description = document.getElementById('description').value
-      const discountPercentage = document.getElementById('discountPercentage').value
-      const maxDiscountValue = document.getElementById('maxDiscountValue').value
-      const error = document.getElementById('errorDisplay')
-      let flag = 1
-      if (coupenName == "") {
-        error.removeAttribute('hidden')
-        error.innerText = "Generate coupen"
-        error.style.background = "rgb(200,0,0,0.1)"
-        error.style.width = "100%"
-        flag = 2
-      } else if (validity == '') {
-        error.removeAttribute('hidden')
-        error.innerText = 'expiry date is required'
-        error.style.background = 'rgb(200,0,0,0.1)'
-        error.style.width = "100%"
+</div>
+</div>
+
+<script>
+  function validatorCoupen() {
+    const coupenName = document.getElementById('couponName').value
+    const validity = document.getElementById('validity').value
+    const minAmount = document.getElementById('minAmount').value
+    const description = document.getElementById('description').value
+    const discountPercentage = document.getElementById('discountPercentage').value
+    const maxDiscountValue = document.getElementById('maxDiscountValue').value
+    const error = document.getElementById('errorDisplay')
+    let flag = 1
+    if (coupenName == "") {
+      error.removeAttribute('hidden')
+      error.innerText = "Generate coupen"
+      error.style.background = "rgb(200,0,0,0.1)"
+      error.style.width = "100%"
+      flag = 2
+    } else if (validity == '') {
+      error.removeAttribute('hidden')
+      error.innerText = 'expiry date is required'
+      error.style.background = 'rgb(200,0,0,0.1)'
+      error.style.width = "100%"
         flag = 2
       } else if (new Date(validity) - new Date() <= 0) {
         error.removeAttribute('hidden')
@@ -108,9 +108,9 @@
         error.style.background = 'rgb(200,0,0,0.1)'
         error.style.width = "100%"
         flag = 2
-      } else if (minAmount == '') {
+      } else if (minAmount == '' || minAmount.length==0 || !minAmount.match(/^\d+(\.\d{1,2})?$/)) {
         error.removeAttribute('hidden')
-        error.innerText = 'min amount is required'
+        error.innerText = 'min amount is not valid'
         error.style.background = 'rgb(200,0,0,0.1)'
         error.style.width = "100%"
         flag = 2
@@ -139,6 +139,13 @@
           error.style.width = "100%"
           flag = 2
         }
+        else if(discountPercentage=='' || discountPercentage.length==0|| !discountPercentage.match(/^\d+(\.\d{1,2})?$/)){
+         error.removeAttribute('hidden')
+        error.innerText = 'Discount percent is not valid'
+        error.style.background = 'rgb(200,0,0,0.1)'
+        error.style.width = "100%"
+        flag = 2
+        }
       } else if (maxDiscountValue > (minAmount * discountPercentage / 100)) {
         error.removeAttribute('hidden')
         console.log(minAmount * discountPercentage / 100);
@@ -146,15 +153,15 @@
         error.style.background = 'rgb(200,0,0,0.1)'
         error.style.width = "100%"
         flag = 2
-      } else if (maxDiscountValue == '') {
+      } else if (maxDiscountValue == '' ||maxDiscountValue.length==0 ||!maxDiscountValue.match(/^\d+(\.\d{1,2})?$/)) {
         error.removeAttribute('hidden')
-        error.innerText = 'Max Discount value is required'
+        error.innerText = 'Max Discount value is not valid'
         error.style.background = 'rgb(200,0,0,0.1)'
         error.style.width = "100%"
         flag = 2
-      } else if (description == '') {
+      } else if (description == ''||description.length==0) {
         error.removeAttribute('hidden')
-        error.innerText = 'description is required'
+        error.innerText = 'description is not valid'
         error.style.background = 'rgb(200,0,0,0.1)'
         error.style.width = "100%"
         flag = 2
@@ -184,7 +191,7 @@
   function generateCoupon() {
     $.ajax({
       url: '/admin/generate_coupon',
-      method: 'GET',
+      method: 'get',
       success: (response) => {
         $('#couponName').val(response.couponCode);
       }

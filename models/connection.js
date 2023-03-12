@@ -1,12 +1,12 @@
 const mongoose = require("mongoose");
 const { MessagingConfigurationInstance } = require("twilio/lib/rest/verify/v2/service/messagingConfiguration");
-const db = mongoose
-  .connect("mongodb://0.0.0.0:27017/ecommerce", {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-  })
-  .then(() => console.log("Database connected!"))
-  .catch(err => console.log(err));
+// const db = mongoose
+//   .connect("mongodb://0.0.0.0:27017/ecommerce", {
+//     useNewUrlParser: true,
+//     useUnifiedTopology: true
+//   })
+//   .then(() => console.log("Database connected!"))
+//   .catch(err => console.log(err));
 
 
 

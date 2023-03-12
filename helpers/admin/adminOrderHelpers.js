@@ -108,6 +108,7 @@ module.exports = {
         });
     },
     getSalesReport: async () => {
+        
         return new Promise(async (resolve, reject) => {
             let response = await db.order.aggregate([
                 {
@@ -183,7 +184,15 @@ module.exports = {
                     },
                 ])
                 .then((total) => {
-                    resolve(total[0].total);
+                    if(total.length){
+
+                        resolve(total[0]?.total);
+                    }
+                    else{
+                        resolve()
+                    }
+                }).catch((err)=>{
+                    reject(err)
                 });
         });
     },
@@ -227,7 +236,7 @@ module.exports = {
                     },
                 ])
                 .then((total) => {
-                    resolve(total[0].total);
+                    resolve(total[0]?.total);
                 });
         });
     },

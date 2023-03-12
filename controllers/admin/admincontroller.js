@@ -64,24 +64,27 @@ module.exports = {
     totalProducts = Products.length;
 
     await adminOrderHelpers.getOrderByDate().then((response) => {
-      let result = response[0].orders;
-      for (let i = 0; i < result.length; i++) {
-        let ans = {};
-
-        ans["createdAt"] = result[i].createdAt;
-
-        days.push(ans);
-
-        ans = {};
-      }
-
-      days.forEach((order) => {
-        const day = order.createdAt.toLocaleDateString("en-US", {
-          weekday: "long",
+      if(response.length){
+        let result = response[0].orders;
+        for (let i = 0; i < result.length; i++) {
+          let ans = {};
+  
+          ans["createdAt"] = result[i].createdAt;
+  
+          days.push(ans);
+  
+          ans = {};
+        }
+  
+        days.forEach((order) => {
+          const day = order.createdAt.toLocaleDateString("en-US", {
+            weekday: "long",
+          });
+  
+          ordersPerDay[day] = (ordersPerDay[day] || 0) + 1;
         });
-
-        ordersPerDay[day] = (ordersPerDay[day] || 0) + 1;
-      });
+      }
+     
     });
     let getCodCount = await adminOrderHelpers.getCodCount();
 
@@ -472,11 +475,13 @@ module.exports = {
         )}`;
     };
     let report = await adminOrderHelpers.getSalesReport();
+console.log(report);
     let total = await adminOrderHelpers.gettotalamount();
+    console.log(total);
     let Details = [];
-    report.forEach((orders) => {
-      Details.push(orders.orders);
-    });
+      report.forEach((orders) => {
+        Details.push(orders.orders);
+      });
     // report.forEach(orders => {userdata.push( orders.orders.shippingAddress)})
 
     res.render("admin/sales-report", {

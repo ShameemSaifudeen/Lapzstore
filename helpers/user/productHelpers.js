@@ -11,9 +11,16 @@ module.exports = {
     })
   },
   shopListProduct: (pageNum) => {
-    const perPage = 6
+    const perPage = 9
     return new Promise(async (resolve, reject) => {
       await db.product.find().skip((pageNum - 1) * perPage).limit(perPage).then((response) => {
+        resolve(response)
+      })
+    })
+  },
+  homeListProduct: () => {
+    return new Promise(async (resolve, reject) => {
+      await db.product.find().exec().then((response) => {
         resolve(response)
       })
     })

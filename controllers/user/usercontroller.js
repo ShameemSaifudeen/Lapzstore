@@ -228,7 +228,7 @@ module.exports = {
     count = await cartHelpers.getCartItemsCount(req.session.user.id);
 
     let cartItems = await cartHelpers.viewCart(req.session.user.id);
-
+    console.log(cartItems);
     res.render("user/view-cart", {
       cartItems,
       userId,
